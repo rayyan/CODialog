@@ -117,7 +117,6 @@ Synth(highlightedIndex)
 }
 
 - (UIView *)accessoryView {
-  // TODO: return view depending on dialog style
   if (self.dialogStyle == CODialogStyleIndeterminate) {
     UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     [activityView startAnimating];
@@ -140,6 +139,8 @@ Synth(highlightedIndex)
     UIGraphicsEndImageContext();
     
     return imageView;
+  } else if (self.dialogStyle == CODialogStyleCustomView) {
+    return self.customView;
   }
   return nil;
 }

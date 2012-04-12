@@ -88,6 +88,23 @@
   
   [self.dialog removeAllButtons];
   [self.dialog addButtonWithTitle:@"Determ." target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showCustomView:) highlighted:YES];
+  [self.dialog showOrUpdateAnimated:YES];
+}
+
+- (void)showCustomView:(id)sender {
+  NSLog(@"custom");
+  
+  UIImageView *view = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Octocat.png"]];
+  view.frame = CGRectMake(0, 0, 128, 128);
+  
+  self.dialog.title = @"Custom";
+  self.dialog.subtitle = @"Hi!";
+  self.dialog.dialogStyle = CODialogStyleCustomView;
+  self.dialog.customView = view;
+  
+  [self.dialog removeAllButtons];
+  [self.dialog addButtonWithTitle:@"Custom" target:self selector:@selector(doNothing:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showSuccess:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }

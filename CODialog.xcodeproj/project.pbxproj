@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DC0021881537986800366339 /* Octocat.png in Resources */ = {isa = PBXBuildFile; fileRef = DC0021871537986800366339 /* Octocat.png */; };
 		DCE92A4B1536F33D006BD7ED /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE92A4A1536F33D006BD7ED /* UIKit.framework */; };
 		DCE92A4D1536F33D006BD7ED /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE92A4C1536F33D006BD7ED /* Foundation.framework */; };
 		DCE92A4F1536F33D006BD7ED /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE92A4E1536F33D006BD7ED /* CoreGraphics.framework */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DC0021871537986800366339 /* Octocat.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Octocat.png; sourceTree = "<group>"; };
 		DCE92A461536F33D006BD7ED /* CODialog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CODialog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCE92A4A1536F33D006BD7ED /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DCE92A4C1536F33D006BD7ED /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -97,6 +99,7 @@
 		DCE92A511536F33D006BD7ED /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DC0021871537986800366339 /* Octocat.png */,
 				DCE92A671536F3C7006BD7ED /* wallpaper.jpg */,
 				DCE92A521536F33D006BD7ED /* CODialog-Info.plist */,
 				DCE92A531536F33D006BD7ED /* InfoPlist.strings */,
@@ -161,6 +164,7 @@
 				DCE92A551536F33D006BD7ED /* InfoPlist.strings in Resources */,
 				DCE92A611536F33D006BD7ED /* COViewController.xib in Resources */,
 				DCE92A681536F3C7006BD7ED /* wallpaper.jpg in Resources */,
+				DC0021881537986800366339 /* Octocat.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,6 +290,7 @@
 				DCE92A661536F33D006BD7ED /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
