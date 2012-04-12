@@ -27,7 +27,17 @@
   // Display dialog
   self.dialog = [CODialog dialogWithView:self.view];
   
+  [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(advanceProgress:) userInfo:nil repeats:YES];
+  
   [self showDefault:nil];
+}
+
+- (void)advanceProgress:(NSTimer *)sender {
+  CGFloat progress = self.dialog.progress + 0.25;
+  if (progress > 1.0) {
+    progress = 0;
+  }
+  self.dialog.progress = progress;
 }
 
 - (void)doNothing:(id)sender {

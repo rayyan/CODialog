@@ -21,6 +21,7 @@
 @property (nonatomic, strong) UIView *hostView;
 @property (nonatomic, strong) CODialogWindowOverlay *overlayWindow;
 @property (nonatomic, strong) UIView *contentView;
+@property (nonatomic, strong) UIView *accessoryView;
 @property (nonatomic, strong) NSMutableArray *textFields;
 @property (nonatomic, strong) NSMutableArray *buttons;
 @property (nonatomic, strong) UIFont *titleFont;
@@ -50,11 +51,11 @@ Synth(customView)
 Synth(dialogStyle)
 Synth(title)
 Synth(subtitle)
-Synth(progress)
 Synth(batchDelay)
 Synth(hostView)
 Synth(overlayWindow)
 Synth(contentView)
+Synth(accessoryView)
 Synth(textFields)
 Synth(buttons)
 Synth(titleFont)
@@ -128,7 +129,22 @@ Synth(highlightedIndex)
   return insetFrame;
 }
 
-- (UIView *)accessoryView {
+- (void)setProgress:(CGFloat)progress {
+  UIProgressView *view = (id)self.accessoryView;
+  if ([view isKindOfClass:[UIProgressView class]]) {
+    [view setProgress:progress animated:YES];
+  }
+}
+
+- (CGFloat)progress {
+  UIProgressView *view = (id)self.accessoryView;
+  if ([view isKindOfClass:[UIProgressView class]]) {
+    return view.progress;
+  }
+  return 0;
+}
+
+- (UIView *)makeAccessoryView {
   if (self.dialogStyle == CODialogStyleIndeterminate) {
     UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     [activityView startAnimating];
@@ -136,7 +152,6 @@ Synth(highlightedIndex)
     return activityView;
   } else if (self.dialogStyle == CODialogStyleDeterminate) {
     UIProgressView *progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
-    progressView.progress = 0.5; // TODO: remove
     progressView.frame = CGRectMake(0, 0, 200.0, 88.0);
     
     return progressView;
@@ -188,8 +203,8 @@ Synth(highlightedIndex)
   layout.subtitleRect = CGRectMake(CGRectGetMinX(layoutFrame), minY, layoutWidth, subtitleHeight);
   
   // Accessory frame (note that views are in the content view coordinate system)
-  UIView *accessoryView = [self accessoryView];
-  accessoryView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+  self.accessoryView = [self makeAccessoryView];
+  self.accessoryView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
   
   CGFloat accessoryHeight = 0;
   CGFloat accessoryWidth = CGRectGetWidth(layoutFrame);
@@ -197,9 +212,9 @@ Synth(highlightedIndex)
   
   minY = CGRectGetMaxY(layout.subtitleRect) - layoutFrameInset;
   
-  if (accessoryView != nil) {
-    accessoryHeight = CGRectGetHeight(accessoryView.frame);
-    accessoryWidth = CGRectGetWidth(accessoryView.frame);
+  if (self.accessoryView != nil) {
+    accessoryHeight = CGRectGetHeight(self.accessoryView.frame);
+    accessoryWidth = CGRectGetWidth(self.accessoryView.frame);
     accessoryLeft = (CGRectGetWidth(layoutFrame) - accessoryWidth) / 2.0;
     minY += kCODialogPadding;
   }
@@ -233,9 +248,9 @@ Synth(highlightedIndex)
   newContentView.contentMode = UIViewContentModeRedraw;
   
   // Layout accessory view
-  accessoryView.frame = layout.accessoryRect;
+  self.accessoryView.frame = layout.accessoryRect;
   
-  [newContentView addSubview:accessoryView];
+  [newContentView addSubview:self.accessoryView];
   
   // Layout text fields
   if (numTextFields > 0) {
