@@ -30,7 +30,7 @@
 
 #define Synth(x) @synthesize x = x##_;
 
-#define kCODialogAnimationDuration 0.1
+#define kCODialogAnimationDuration 0.15
 #define kCODialogPadding 8.0
 #define kCODialogFrameInset 8.0
 #define kCODialogButtonHeight 44.0
