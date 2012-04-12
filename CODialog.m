@@ -315,9 +315,10 @@ Synth(highlightedIndex)
   [self.textFields removeAllObjects];
 }
 
-- (void)addTextFieldWithPlaceholder:(NSString *)placeholder {
+- (void)addTextFieldWithPlaceholder:(NSString *)placeholder secure:(BOOL)secure {
   UITextField *field = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 200, kCODialogTextFieldHeight)];
   field.placeholder = placeholder;
+  field.secureTextEntry = secure;
   field.font = [UIFont systemFontOfSize:kCODialogTextFieldHeight - 8.0];
   field.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
   field.textColor = [UIColor blackColor];

@@ -55,9 +55,9 @@
   self.dialog.subtitle = @"Plenty of them";
   
   [self.dialog removeAllTextFields];
-  [self.dialog addTextFieldWithPlaceholder:@"Field 1"];
-  [self.dialog addTextFieldWithPlaceholder:@"Field 2"];
-  [self.dialog addTextFieldWithPlaceholder:@"Field 3"];
+  [self.dialog addTextFieldWithPlaceholder:@"User" secure:NO];
+  [self.dialog addTextFieldWithPlaceholder:@"Password" secure:YES];
+  [self.dialog addTextFieldWithPlaceholder:@"Pin" secure:YES];
   
   [self.dialog removeAllButtons];
   [self.dialog addButtonWithTitle:@"Fields" target:self selector:@selector(doNothing:)];
