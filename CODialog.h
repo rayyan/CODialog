@@ -44,7 +44,9 @@ typedef NSInteger CODialogStyle;
 
 /** @name Methods to Override */
 
+- (void)drawRect:(CGRect)rect;
 - (void)drawDialogBackgroundInRect:(CGRect)rect;
 - (void)drawButtonInRect:(CGRect)rect title:(NSString *)title highlighted:(BOOL)highlighted down:(BOOL)down;
+- (void)drawTitleInRect:(CGRect)rect subtitle:(BOOL)isSubtitle;
 
 @end

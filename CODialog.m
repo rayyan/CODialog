@@ -320,8 +320,40 @@ Synth(buttons)
   CGContextRestoreGState(ctx);
 }
 
+- (void)drawTitleInRect:(CGRect)rect subtitle:(BOOL)isSubtitle {
+  NSString *title = (isSubtitle ? self.subtitle : self.title);
+  if (title.length > 0) {
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(ctx);
+    CGContextSetShadowWithColor(ctx, CGSizeMake(0.0, -1.0), 0.0, [UIColor blackColor].CGColor);
+    
+    CGFloat fontSize = (isSubtitle ? 14.0 : 18.0);
+    UIFont *font = (isSubtitle ? [UIFont systemFontOfSize:fontSize] : [UIFont boldSystemFontOfSize:fontSize]);
+    
+    [[UIColor whiteColor] set];
+    
+    [title drawInRect:rect withFont:font lineBreakMode:UILineBreakModeMiddleTruncation alignment:UITextAlignmentCenter];
+    
+    CGContextRestoreGState(ctx);
+  }
+}
+
 - (void)drawRect:(CGRect)rect {
   [self drawDialogBackgroundInRect:rect];
+  
+  // Draw title
+  CGRect titleRect = CGRectInset(rect, kCODialogFrameInset, kCODialogFrameInset);
+  titleRect.origin.y += kCODialogPadding * 2.0;
+  titleRect.size.height = 18.0;
+  
+  [self drawTitleInRect:titleRect subtitle:NO];
+  
+  // Draw subtitle
+  CGRect subtitleRect = CGRectInset(rect, kCODialogFrameInset, kCODialogFrameInset);
+  subtitleRect.origin.y = CGRectGetMaxY(titleRect) + kCODialogPadding;
+  subtitleRect.size.height = 14.0;
+  
+  [self drawTitleInRect:subtitleRect subtitle:YES];
 }
 
 @end

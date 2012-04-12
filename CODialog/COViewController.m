@@ -21,6 +21,8 @@
   
   // Display dialog
   CODialog *dialog = [CODialog dialogWithView:self.view];
+  dialog.title = @"Title";
+  dialog.subtitle = @"Subtitle";
   
   [dialog addButtonWithTitle:@"Cancel" target:self selector:@selector(cancel:)];
   [dialog addButtonWithTitle:@"Upload" target:self selector:@selector(upload:)];
