@@ -25,6 +25,7 @@
 
 #define Synth(x) @synthesize x = x##_;
 
+#define kCODialogAnimationDuration 0.1
 #define kCODialogPadding 8.0
 #define kCODialogFrameInset 8.0
 #define kCODialogButtonHeight 44.0
@@ -89,7 +90,7 @@ Synth(highlightedIndex)
   CGRect frame = self.frame;
   frame.origin.y = (height - CGRectGetHeight(self.bounds)) / 2.0;
   
-  [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+  [UIView animateWithDuration:kCODialogAnimationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
     self.frame = frame;
   } completion:^(BOOL finished) {
     // stub
@@ -278,7 +279,7 @@ Synth(highlightedIndex)
   }
   
   // Fade content views
-  CGFloat animationDuration = 0.15;
+  CGFloat animationDuration = kCODialogAnimationDuration;
   if (self.contentView.superview != nil) {
     [UIView transitionFromView:self.contentView
                         toView:newContentView
