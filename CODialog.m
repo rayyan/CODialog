@@ -65,8 +65,42 @@ Synth(highlightedIndex)
     self.alpha = 1.0;
     self.buttons = [NSMutableArray new];
     self.textFields = [NSMutableArray new];
+    
+    // Register for keyboard notifications
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [nc addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
   }
   return self;
+}
+
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)adjustToKeyboardBounds:(CGRect)bounds {
+  CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
+  CGFloat height = CGRectGetHeight(appFrame) - CGRectGetHeight(bounds);
+  
+  CGRect frame = self.frame;
+  frame.origin.y = (height - CGRectGetHeight(self.bounds)) / 2.0;
+  
+  [UIView animateWithDuration:0.15 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+    self.frame = frame;
+  } completion:^(BOOL finished) {
+    // stub
+  }];
+}
+
+- (void)keyboardWillShow:(NSNotification *)note {
+  NSValue *value = [[note userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey];
+  CGRect frame = [value CGRectValue];
+  
+  [self adjustToKeyboardBounds:frame];
+}
+
+- (void)keyboardWillHide:(NSNotification *)note {
+  [self adjustToKeyboardBounds:CGRectZero];
 }
 
 - (CGRect)defaultDialogFrame {
