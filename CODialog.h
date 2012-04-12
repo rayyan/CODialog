@@ -13,7 +13,6 @@ enum {
   CODialogStyleDefault = 0,
   CODialogStyleIndeterminate,
   CODialogStyleDeterminate,
-  CODialogStyleTextInput,
   CODialogStyleSuccess,
   CODialogStyleError,
   CODialogStyleCustomView
@@ -34,6 +33,8 @@ typedef NSInteger CODialogStyle;
 
 /** @name Configuration */
 
+- (void)removeAllTextFields;
+- (void)addTextFieldWithPlaceholder:(NSString *)placeholder;
 - (void)removeAllButtons;
 - (void)addButtonWithTitle:(NSString *)title target:(id)target selector:(SEL)sel;
 - (void)addButtonWithTitle:(NSString *)title target:(id)target selector:(SEL)sel highlighted:(BOOL)flag;
@@ -51,5 +52,6 @@ typedef NSInteger CODialogStyle;
 - (void)drawButtonInRect:(CGRect)rect title:(NSString *)title highlighted:(BOOL)highlighted down:(BOOL)down;
 - (void)drawTitleInRect:(CGRect)rect isSubtitle:(BOOL)isSubtitle;
 - (void)drawSymbolInRect:(CGRect)rect;
+- (void)drawTextFieldInRect:(CGRect)rect;
 
 @end

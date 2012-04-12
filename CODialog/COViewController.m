@@ -43,6 +43,24 @@
   
   [self.dialog removeAllButtons];
   [self.dialog addButtonWithTitle:@"Do Nothing" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showText:) highlighted:YES];
+  [self.dialog showOrUpdateAnimated:YES];
+}
+
+- (void)showText:(id)sender {
+  NSLog(@"text");
+  
+  self.dialog.dialogStyle = CODialogStyleDefault;
+  self.dialog.title = @"Text Fields";
+  self.dialog.subtitle = @"Plenty of them";
+  
+  [self.dialog removeAllTextFields];
+  [self.dialog addTextFieldWithPlaceholder:@"Field 1"];
+  [self.dialog addTextFieldWithPlaceholder:@"Field 2"];
+  [self.dialog addTextFieldWithPlaceholder:@"Field 3"];
+  
+  [self.dialog removeAllButtons];
+  [self.dialog addButtonWithTitle:@"Fields" target:self selector:@selector(doNothing:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showIndeterminate:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }
@@ -54,6 +72,7 @@
   self.dialog.subtitle = nil;
   self.dialog.dialogStyle = CODialogStyleIndeterminate;
   
+  [self.dialog removeAllTextFields];
   [self.dialog removeAllButtons];
   [self.dialog addButtonWithTitle:@"Indeterm." target:self selector:@selector(doNothing:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showDeterminate:) highlighted:YES];

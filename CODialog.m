@@ -12,6 +12,7 @@
 @interface CODialog ()
 @property (nonatomic, strong) UIView *hostView;
 @property (nonatomic, strong) UIView *contentView;
+@property (nonatomic, strong) NSMutableArray *textFields;
 @property (nonatomic, strong) NSMutableArray *buttons;
 @property (nonatomic, strong) UIFont *titleFont;
 @property (nonatomic, strong) UIFont *subtitleFont;
@@ -23,6 +24,7 @@
 #define kCODialogPadding 8.0
 #define kCODialogFrameInset 8.0
 #define kCODialogButtonHeight 44.0
+#define kCODialogTextFieldHeight 29.0
 
 @implementation CODialog {
 @private
@@ -30,6 +32,7 @@
     CGRect titleRect;
     CGRect subtitleRect;
     CGRect accessoryRect;
+    CGRect textFieldsRect;
     CGRect buttonRect;
   } layout;
 }
@@ -41,6 +44,7 @@ Synth(progress)
 Synth(batchDelay)
 Synth(hostView)
 Synth(contentView)
+Synth(textFields)
 Synth(buttons)
 Synth(titleFont)
 Synth(subtitleFont)
@@ -60,6 +64,7 @@ Synth(highlightedIndex)
     self.opaque = NO;
     self.alpha = 1.0;
     self.buttons = [NSMutableArray new];
+    self.textFields = [NSMutableArray new];
   }
   return self;
 }
@@ -148,9 +153,20 @@ Synth(highlightedIndex)
   }
   layout.accessoryRect = CGRectMake(accessoryLeft, minY, accessoryWidth, accessoryHeight);
   
+  // Text fields frame (note that views are in the content view coordinate system)
+  CGFloat textFieldsHeight = 0;
+  NSUInteger numTextFields = self.textFields.count;
+  
+  minY = CGRectGetMaxY(layout.accessoryRect);
+  if (numTextFields > 0) {
+    textFieldsHeight = kCODialogTextFieldHeight * (CGFloat)numTextFields + kCODialogPadding * ((CGFloat)numTextFields - 1.0);
+    minY += kCODialogPadding;
+  }
+  layout.textFieldsRect = CGRectMake(CGRectGetMinX(layoutFrame), minY, layoutWidth, textFieldsHeight);
+  
   // Buttons frame (note that views are in the content view coordinate system)
   CGFloat buttonsHeight = 0;
-  minY = CGRectGetMaxY(layout.accessoryRect);
+  minY = CGRectGetMaxY(layout.textFieldsRect);
   if (self.buttons.count > 0) {
     buttonsHeight = kCODialogButtonHeight;
     minY += kCODialogPadding;
@@ -169,7 +185,32 @@ Synth(highlightedIndex)
   
   [newContentView addSubview:accessoryView];
   
-  // Layout buttons on new content view
+  // Layout text fields
+  if (numTextFields > 0) {
+    for (int i=0; i<numTextFields; i++) {
+      CGFloat offsetY = (kCODialogTextFieldHeight + kCODialogPadding) * (CGFloat)i;
+      CGRect fieldFrame = CGRectMake(0,
+                                     CGRectGetMinY(layout.textFieldsRect) + offsetY,
+                                     layoutWidth,
+                                     kCODialogTextFieldHeight);
+      
+      UITextField *field = [self.textFields objectAtIndex:i];
+      field.frame = fieldFrame;
+      field.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+      
+      // Set background image
+      UIGraphicsBeginImageContextWithOptions(fieldFrame.size, NO, 0);
+      
+      [self drawTextFieldInRect:(CGRect){CGPointZero, fieldFrame.size}];
+      [field setBackground:UIGraphicsGetImageFromCurrentImageContext()];
+      
+      UIGraphicsEndImageContext();
+      
+      [newContentView addSubview:field];
+    }
+  }
+  
+  // Layout buttons
   NSUInteger count = self.buttons.count;
   if (count > 0) {
     CGFloat buttonWidth = (CGRectGetWidth(layout.buttonRect) - kCODialogPadding * ((CGFloat)count - 1.0)) / (CGFloat)count;
@@ -234,6 +275,21 @@ Synth(highlightedIndex)
   } completion:^(BOOL finished) {
     [self setNeedsDisplay];
   }];
+}
+
+- (void)removeAllTextFields {
+  [self.textFields removeAllObjects];
+}
+
+- (void)addTextFieldWithPlaceholder:(NSString *)placeholder {
+  UITextField *field = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 200, kCODialogTextFieldHeight)];
+  field.placeholder = placeholder;
+  field.font = [UIFont systemFontOfSize:kCODialogTextFieldHeight - 8.0];
+  field.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+  field.textColor = [UIColor blackColor];
+  field.delegate = (id)self;
+  
+  [self.textFields addObject:field];
 }
 
 - (void)removeAllButtons {
@@ -557,10 +613,76 @@ Synth(highlightedIndex)
   CGContextRestoreGState(ctx);
 }
 
+- (void)drawTextFieldInRect:(CGRect)rect {
+  // General Declarations
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSaveGState(context);
+  
+  // Color Declarations
+  UIColor *white10 = [UIColor colorWithWhite:1.0 alpha:0.1];
+  UIColor *grey40 = [UIColor colorWithWhite:0.4 alpha:1.0];
+  
+  // Shadow Declarations
+  CGColorRef innerShadow = grey40.CGColor;
+  CGSize innerShadowOffset = CGSizeMake(0, 2);
+  CGFloat innerShadowBlurRadius = 2;
+  CGColorRef outerShadow = white10.CGColor;
+  CGSize outerShadowOffset = CGSizeMake(0, 1);
+  CGFloat outerShadowBlurRadius = 0;
+  
+  // Rectangle Drawing
+  UIBezierPath *rectanglePath = [UIBezierPath bezierPathWithRect: CGRectIntegral(rect)];
+  CGContextSaveGState(context);
+  CGContextSetShadowWithColor(context, outerShadowOffset, outerShadowBlurRadius, outerShadow);
+  [[UIColor whiteColor] setFill];
+  [rectanglePath fill];
+  
+  // Rectangle Inner Shadow
+  CGRect rectangleBorderRect = CGRectInset([rectanglePath bounds], -innerShadowBlurRadius, -innerShadowBlurRadius);
+  rectangleBorderRect = CGRectOffset(rectangleBorderRect, -innerShadowOffset.width, -innerShadowOffset.height);
+  rectangleBorderRect = CGRectInset(CGRectUnion(rectangleBorderRect, [rectanglePath bounds]), -1, -1);
+  
+  UIBezierPath* rectangleNegativePath = [UIBezierPath bezierPathWithRect: rectangleBorderRect];
+  [rectangleNegativePath appendPath: rectanglePath];
+  rectangleNegativePath.usesEvenOddFillRule = YES;
+  
+  CGContextSaveGState(context);
+  {
+    CGFloat xOffset = innerShadowOffset.width + round(rectangleBorderRect.size.width);
+    CGFloat yOffset = innerShadowOffset.height;
+    CGContextSetShadowWithColor(context,
+                                CGSizeMake(xOffset + copysign(0.1, xOffset), yOffset + copysign(0.1, yOffset)),
+                                innerShadowBlurRadius,
+                                innerShadow);
+    
+    [rectanglePath addClip];
+    CGAffineTransform transform = CGAffineTransformMakeTranslation(-round(rectangleBorderRect.size.width), 0);
+    [rectangleNegativePath applyTransform: transform];
+    [[UIColor grayColor] setFill];
+    [rectangleNegativePath fill];
+  }
+  
+  CGContextRestoreGState(context);
+  CGContextRestoreGState(context);
+  
+  [[UIColor blackColor] setStroke];
+  rectanglePath.lineWidth = 1;
+  [rectanglePath stroke];
+  
+  CGContextRestoreGState(context);
+}
+
 - (void)drawRect:(CGRect)rect {
   [self drawDialogBackgroundInRect:rect];
   [self drawTitleInRect:layout.titleRect isSubtitle:NO];
   [self drawTitleInRect:layout.subtitleRect isSubtitle:YES];
+}
+
+#pragma mark - UITextFieldDelegate
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+  [textField resignFirstResponder];
+  return YES;
 }
 
 @end
