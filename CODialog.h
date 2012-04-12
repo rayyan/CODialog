@@ -50,6 +50,6 @@ typedef NSInteger CODialogStyle;
 - (void)drawDialogBackgroundInRect:(CGRect)rect;
 - (void)drawButtonInRect:(CGRect)rect title:(NSString *)title highlighted:(BOOL)highlighted down:(BOOL)down;
 - (void)drawTitleInRect:(CGRect)rect isSubtitle:(BOOL)isSubtitle;
-- (void)drawSuccessSymbolInRect:(CGRect)rect;
+- (void)drawSymbolInRect:(CGRect)rect;
 
 @end

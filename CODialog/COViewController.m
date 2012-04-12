@@ -26,16 +26,25 @@
   
   // Display dialog
   self.dialog = [CODialog dialogWithView:self.view];
-  self.dialog.title = @"Title";
-  self.dialog.subtitle = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at tincidunt arcu. Donec faucibus velit ac ante condimentum pulvinar. Aliquam eget urna vel tortor laoreet porttitor. Pellentesque molestie fringilla tortor, ut consectetur diam adipiscing sit amet.";
   
-  [self.dialog addButtonWithTitle:@"Do Nothing" target:self selector:@selector(doNothing:)];
-  [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showIndeterminate:) highlighted:YES];
-  [self.dialog showOrUpdateAnimated:YES];
+  [self showDefault:nil];
 }
 
 - (void)doNothing:(id)sender {
   NSLog(@"i'm very good at doing nothing");
+}
+
+- (void)showDefault:(id)sender {
+  NSLog(@"default");
+  
+  self.dialog.dialogStyle = CODialogStyleDefault;
+  self.dialog.title = @"Title";
+  self.dialog.subtitle = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at tincidunt arcu. Donec faucibus velit ac ante condimentum pulvinar. Aliquam eget urna vel tortor laoreet porttitor. Pellentesque molestie fringilla tortor, ut consectetur diam adipiscing sit amet.";
+  
+  [self.dialog removeAllButtons];
+  [self.dialog addButtonWithTitle:@"Do Nothing" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showIndeterminate:) highlighted:YES];
+  [self.dialog showOrUpdateAnimated:YES];
 }
 
 - (void)showIndeterminate:(id)sender {
@@ -46,7 +55,7 @@
   self.dialog.dialogStyle = CODialogStyleIndeterminate;
   
   [self.dialog removeAllButtons];
-  [self.dialog addButtonWithTitle:@"Do Nothing" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Indeterm." target:self selector:@selector(doNothing:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showDeterminate:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }
@@ -59,7 +68,7 @@
   self.dialog.dialogStyle = CODialogStyleDeterminate;
   
   [self.dialog removeAllButtons];
-  [self.dialog addButtonWithTitle:@"Do Nothing" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Determ." target:self selector:@selector(doNothing:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showSuccess:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }
@@ -72,13 +81,22 @@
   self.dialog.dialogStyle = CODialogStyleSuccess;
   
   [self.dialog removeAllButtons];
-  [self.dialog addButtonWithTitle:@"Do Nothing" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Success" target:self selector:@selector(doNothing:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showError:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }
 
 - (void)showError:(id)sender {
   NSLog(@"error");
+  
+  self.dialog.title = @"Error";
+  self.dialog.subtitle = nil;
+  self.dialog.dialogStyle = CODialogStyleError;
+  
+  [self.dialog removeAllButtons];
+  [self.dialog addButtonWithTitle:@"Error" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showDefault:) highlighted:YES];
+  [self.dialog showOrUpdateAnimated:YES];
 }
 
 @end

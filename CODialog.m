@@ -82,15 +82,15 @@ Synth(highlightedIndex)
   } else if (self.dialogStyle == CODialogStyleDeterminate) {
     UIProgressView *progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
     progressView.progress = 0.5; // TODO: remove
-    
     progressView.frame = CGRectMake(0, 0, 200.0, 88.0);
     
     return progressView;
-  } else if (self.dialogStyle == CODialogStyleSuccess) {
+  } else if (self.dialogStyle == CODialogStyleSuccess ||
+             self.dialogStyle == CODialogStyleError) {
     CGSize iconSize = CGSizeMake(64, 64);
     UIGraphicsBeginImageContextWithOptions(iconSize, NO, 0);
     
-    [self drawSuccessSymbolInRect:(CGRect){CGPointZero, iconSize}];
+    [self drawSymbolInRect:(CGRect){CGPointZero, iconSize}];
     
     UIImageView *imageView = [[UIImageView alloc] initWithImage:UIGraphicsGetImageFromCurrentImageContext()];
     UIGraphicsEndImageContext();
@@ -477,7 +477,7 @@ Synth(highlightedIndex)
   }
 }
 
-- (void)drawSuccessSymbolInRect:(CGRect)rect {
+- (void)drawSymbolInRect:(CGRect)rect { 
   CGContextRef ctx = UIGraphicsGetCurrentContext();
   CGContextSaveGState(ctx);
   
@@ -503,13 +503,30 @@ Synth(highlightedIndex)
   
   // Bezier Drawing
   UIBezierPath *bezierPath = [UIBezierPath bezierPath];
-  [bezierPath moveToPoint:CGPointMake(16, 23)];
-  [bezierPath addLineToPoint:CGPointMake(27, 34)];
-  [bezierPath addLineToPoint:CGPointMake(56, 5)];
-  [bezierPath addLineToPoint:CGPointMake(63, 12)];
-  [bezierPath addLineToPoint:CGPointMake(27, 48)];
-  [bezierPath addLineToPoint:CGPointMake(9, 30)];
-  [bezierPath addLineToPoint:CGPointMake(16, 23)];
+  if (self.dialogStyle == CODialogStyleSuccess) {
+    [bezierPath moveToPoint:CGPointMake(16, 23)];
+    [bezierPath addLineToPoint:CGPointMake(27, 34)];
+    [bezierPath addLineToPoint:CGPointMake(56, 5)];
+    [bezierPath addLineToPoint:CGPointMake(63, 12)];
+    [bezierPath addLineToPoint:CGPointMake(27, 48)];
+    [bezierPath addLineToPoint:CGPointMake(9, 30)];
+    [bezierPath addLineToPoint:CGPointMake(16, 23)];
+  } else {
+    [bezierPath moveToPoint: CGPointMake(11, 17)];
+    [bezierPath addLineToPoint: CGPointMake(19, 9)];
+    [bezierPath addLineToPoint: CGPointMake(33, 23)];
+    [bezierPath addLineToPoint: CGPointMake(47, 9)];
+    [bezierPath addLineToPoint: CGPointMake(55, 17)];
+    [bezierPath addLineToPoint: CGPointMake(41, 31)];
+    [bezierPath addLineToPoint: CGPointMake(55, 45)];
+    [bezierPath addLineToPoint: CGPointMake(47, 53)];
+    [bezierPath addLineToPoint: CGPointMake(33, 39)];
+    [bezierPath addLineToPoint: CGPointMake(19, 53)];
+    [bezierPath addLineToPoint: CGPointMake(11, 45)];
+    [bezierPath addLineToPoint: CGPointMake(25, 31)];
+    [bezierPath addLineToPoint: CGPointMake(11, 17)];
+  }
+  
   [bezierPath closePath];
   
   // Determine scale (the default side is 64)
