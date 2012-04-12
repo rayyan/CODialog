@@ -88,8 +88,9 @@ Synth(subtitleFont)
     titleHeight = [self.title sizeWithFont:self.titleFont
                          constrainedToSize:CGSizeMake(layoutWidth, MAXFLOAT)
                              lineBreakMode:UILineBreakModeWordWrap].height;
+    minY += kCODialogPadding;
   }
-  layout.titleRect = CGRectMake(CGRectGetMinX(layoutFrame), CGRectGetMinY(layoutFrame), CGRectGetWidth(layoutFrame), titleHeight);
+  layout.titleRect = CGRectMake(CGRectGetMinX(layoutFrame), minY, CGRectGetWidth(layoutFrame), titleHeight);
   
   // Subtitle frame
   CGFloat subtitleHeight = 0;
