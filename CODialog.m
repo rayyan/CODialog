@@ -86,6 +86,16 @@ Synth(highlightedIndex)
     progressView.frame = CGRectMake(0, 0, 200.0, 88.0);
     
     return progressView;
+  } else if (self.dialogStyle == CODialogStyleSuccess) {
+    CGSize iconSize = CGSizeMake(64, 64);
+    UIGraphicsBeginImageContextWithOptions(iconSize, NO, 0);
+    
+    [self drawSuccessSymbolInRect:(CGRect){CGPointZero, iconSize}];
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:UIGraphicsGetImageFromCurrentImageContext()];
+    UIGraphicsEndImageContext();
+    
+    return imageView;
   }
   return nil;
 }
@@ -465,6 +475,69 @@ Synth(highlightedIndex)
     
     CGContextRestoreGState(ctx);
   }
+}
+
+- (void)drawSuccessSymbolInRect:(CGRect)rect {
+  CGContextRef ctx = UIGraphicsGetCurrentContext();
+  CGContextSaveGState(ctx);
+  
+  // General Declarations
+  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  
+  // Color Declarations
+  UIColor *grey = [UIColor colorWithRed:0.7 green:0.7 blue:0.7 alpha:1.0];
+  UIColor *black50 = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.5];
+  
+  // Gradient Declarations
+  NSArray *gradientColors = [NSArray arrayWithObjects: 
+                             (id)[UIColor whiteColor].CGColor, 
+                             (id)grey.CGColor, nil];
+  CGFloat gradientLocations[] = {0, 1};
+  CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)gradientColors, gradientLocations);
+  
+  // Shadow Declarations
+  CGColorRef shadow = black50.CGColor;
+  CGSize shadowOffset = CGSizeMake(0, 3);
+  CGFloat shadowBlurRadius = 3;
+  
+  // Bezier Drawing
+  UIBezierPath *bezierPath = [UIBezierPath bezierPath];
+  [bezierPath moveToPoint:CGPointMake(16, 23)];
+  [bezierPath addLineToPoint:CGPointMake(27, 34)];
+  [bezierPath addLineToPoint:CGPointMake(56, 5)];
+  [bezierPath addLineToPoint:CGPointMake(63, 12)];
+  [bezierPath addLineToPoint:CGPointMake(27, 48)];
+  [bezierPath addLineToPoint:CGPointMake(9, 30)];
+  [bezierPath addLineToPoint:CGPointMake(16, 23)];
+  [bezierPath closePath];
+  
+  // Determine scale (the default side is 64)
+  CGPoint offset = CGPointMake((CGRectGetWidth(rect) - 64.0) / 2.0, (CGRectGetHeight(rect) - 64.0) / 2.0);
+  
+  [bezierPath applyTransform:CGAffineTransformMakeTranslation(offset.x, offset.y)];
+  
+  CGContextSaveGState(context);
+  CGContextSetShadowWithColor(context, shadowOffset, shadowBlurRadius, shadow);
+  CGContextSetFillColorWithColor(context, shadow);
+  
+  [bezierPath fill];
+  [bezierPath addClip];
+  
+  CGRect bounds = bezierPath.bounds;
+  
+  CGContextDrawLinearGradient(context,
+                              gradient,
+                              CGPointMake(CGRectGetMidX(bounds), CGRectGetMinY(bounds)),
+                              CGPointMake(CGRectGetMidX(bounds), CGRectGetMaxY(bounds)),
+                              0);
+  CGContextRestoreGState(context);
+  
+  // Cleanup
+  CGGradientRelease(gradient);
+  CGColorSpaceRelease(colorSpace);
+  
+  CGContextRestoreGState(ctx);
 }
 
 - (void)drawRect:(CGRect)rect {

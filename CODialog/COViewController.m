@@ -66,6 +66,19 @@
 
 - (void)showSuccess:(id)sender {
   NSLog(@"success");
+  
+  self.dialog.title = @"Success";
+  self.dialog.subtitle = nil;
+  self.dialog.dialogStyle = CODialogStyleSuccess;
+  
+  [self.dialog removeAllButtons];
+  [self.dialog addButtonWithTitle:@"Do Nothing" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showError:) highlighted:YES];
+  [self.dialog showOrUpdateAnimated:YES];
+}
+
+- (void)showError:(id)sender {
+  NSLog(@"error");
 }
 
 @end
