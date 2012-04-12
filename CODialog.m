@@ -313,8 +313,13 @@ Synth(highlightedIndex)
 }
 
 - (void)addTextFieldWithPlaceholder:(NSString *)placeholder secure:(BOOL)secure {
+  for (UITextField *field in self.textFields) {
+    field.returnKeyType = UIReturnKeyNext;
+  }
+  
   CODialogTextField *field = [[CODialogTextField alloc] initWithFrame:CGRectMake(0, 0, 200, kCODialogTextFieldHeight)];
   field.dialog = self;
+  field.returnKeyType = UIReturnKeyDone;
   field.placeholder = placeholder;
   field.secureTextEntry = secure;
   field.font = [UIFont systemFontOfSize:kCODialogTextFieldHeight - 8.0];
@@ -715,7 +720,17 @@ Synth(highlightedIndex)
 #pragma mark - UITextFieldDelegate
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-  [textField resignFirstResponder];
+  // Cylce through text fields
+  NSUInteger index = [self.textFields indexOfObject:textField];
+  NSUInteger count = self.textFields.count;
+  
+  if (index < (count - 1)) {
+    UITextField *nextField = [self.textFields objectAtIndex:index + 1];
+    [nextField becomeFirstResponder];
+  } else {
+    [textField resignFirstResponder];
+  }
+  
   return YES;
 }
 
