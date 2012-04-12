@@ -321,6 +321,7 @@ Synth(highlightedIndex)
   field.font = [UIFont systemFontOfSize:kCODialogTextFieldHeight - 8.0];
   field.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
   field.textColor = [UIColor blackColor];
+  field.keyboardAppearance = UIKeyboardAppearanceAlert;
   field.delegate = (id)self;
   
   [self.textFields addObject:field];
