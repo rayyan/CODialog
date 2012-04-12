@@ -13,6 +13,8 @@
 @property (nonatomic, strong) UIView *hostView;
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, strong) NSMutableArray *buttons;
+@property (nonatomic, strong) UIFont *titleFont;
+@property (nonatomic, strong) UIFont *subtitleFont;
 @end
 
 #define Synth(x) @synthesize x = x##_;
@@ -21,7 +23,15 @@
 #define kCODialogFrameInset 8.0
 #define kCODialogButtonHeight 44.0
 
-@implementation CODialog
+@implementation CODialog {
+@private
+  struct {
+    CGRect titleRect;
+    CGRect subtitleRect;
+    CGRect accessoryRect;
+    CGRect buttonRect;
+  } layout;
+}
 Synth(customView)
 Synth(dialogStyle)
 Synth(title)
@@ -31,14 +41,18 @@ Synth(batchDelay)
 Synth(hostView)
 Synth(contentView)
 Synth(buttons)
+Synth(titleFont)
+Synth(subtitleFont)
 
 + (instancetype)dialogWithView:(UIView *)hostView {
   return [[self alloc] initWithView:hostView];
 }
 
 - (id)initWithView:(UIView *)hostView {
-  self = [super initWithFrame:CGRectIntegral(CGRectInset(hostView.bounds, 30.0, 30.0))];
+  self = [super initWithFrame:[self defaultDialogFrame]];
   if (self) {
+    self.titleFont = [UIFont boldSystemFontOfSize:18.0];
+    self.subtitleFont = [UIFont systemFontOfSize:14.0];
     self.hostView = hostView;
     self.opaque = NO;
     self.alpha = 1.0;
@@ -47,21 +61,70 @@ Synth(buttons)
   return self;
 }
 
+- (CGRect)defaultDialogFrame {
+  CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
+  CGRect insetFrame = CGRectIntegral(CGRectInset(appFrame, 20.0, 20.0));
+  insetFrame.size.height = 180.0;
+  
+  return insetFrame;
+}
+
+- (UIView *)accessoryView {
+  // TODO: return view depending on dialog style
+  return nil;
+}
+
 - (void)layoutComponents {
+  // Compute frames of components
+  CGRect layoutFrame = CGRectInset(self.bounds,
+                                   kCODialogFrameInset + kCODialogPadding,
+                                   kCODialogFrameInset + kCODialogPadding);
+  CGFloat layoutWidth = CGRectGetWidth(layoutFrame);
+  
+  // Title frame
+  CGFloat titleHeight = 0;
+  if (self.title.length > 0) {
+    titleHeight = [self.title sizeWithFont:self.titleFont forWidth:layoutWidth lineBreakMode:UILineBreakModeWordWrap].height;
+  }
+  layout.titleRect = CGRectMake(CGRectGetMinX(layoutFrame), CGRectGetMinY(layoutFrame), CGRectGetWidth(layoutFrame), titleHeight);
+  
+  // Subtitle frame
+  CGFloat subtitleHeight = 0;
+  if (self.subtitle.length > 0) {
+    subtitleHeight = [self.subtitle sizeWithFont:self.subtitleFont forWidth:layoutWidth lineBreakMode:UILineBreakModeWordWrap].height;
+  }
+  layout.subtitleRect = CGRectMake(CGRectGetMinX(layout.titleRect), CGRectGetMaxY(layout.titleRect) + kCODialogPadding, layoutWidth, titleHeight);
+  
+  // Content frame
+  CGFloat accessoryHeight = 0;
+  UIView *accessoryView = [self accessoryView];
+  if (accessoryView != nil) {
+    accessoryHeight = CGRectGetHeight(accessoryView.frame);
+  }
+  layout.accessoryRect = CGRectMake(CGRectGetMinX(layout.subtitleRect), CGRectGetMaxY(layout.subtitleRect) + kCODialogPadding, layoutWidth, accessoryHeight);
+  
+  // Buttons frame  
+  CGFloat buttonsHeight = 0;
+  if (self.buttons.count > 0) {
+    buttonsHeight = kCODialogButtonHeight;
+  }
+  layout.buttonRect = CGRectMake(CGRectGetMinX(layout.accessoryRect), CGRectGetMaxY(layout.accessoryRect) + kCODialogPadding, layoutWidth, buttonsHeight);
+  
+  // Adjust layout frame
+  layoutFrame.size.height = CGRectGetMaxY(layout.buttonRect);
+  
   // Create new content view
-  CGRect contentFrame = CGRectInset(self.bounds, kCODialogFrameInset, kCODialogFrameInset);
-  UIView *newContentView = [[UIView alloc] initWithFrame:contentFrame];
-  newContentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  UIView *newContentView = [[UIView alloc] initWithFrame:layoutFrame];
+  newContentView.contentMode = UIViewContentModeRedraw;
   
   // Layout buttons on new content view
   NSUInteger count = self.buttons.count;
   if (count > 0) {
-    CGFloat height = CGRectGetHeight(contentFrame);
-    CGFloat buttonWidth = (CGRectGetWidth(contentFrame) - kCODialogPadding * ((CGFloat)count + 1.0)) / (CGFloat)count;
+    CGFloat buttonWidth = (CGRectGetWidth(layout.buttonRect) - kCODialogPadding * ((CGFloat)count - 1.0)) / (CGFloat)count;
     
     for (int i=0; i<count; i++) {
-      CGFloat left = kCODialogPadding * ((CGFloat)i + 1.0) + buttonWidth * (CGFloat)i;
-      CGRect buttonFrame = CGRectIntegral(CGRectMake(left, height - kCODialogButtonHeight - kCODialogPadding, buttonWidth, kCODialogButtonHeight));
+      CGFloat left = (kCODialogPadding + buttonWidth) * (CGFloat)i;
+      CGRect buttonFrame = CGRectIntegral(CGRectMake(left, CGRectGetMinY(layout.buttonRect), buttonWidth, kCODialogButtonHeight));
       
       UIButton *button = [self.buttons objectAtIndex:i];
       button.frame = buttonFrame;
@@ -90,10 +153,11 @@ Synth(buttons)
   }
   
   // Fade content views
+  CGFloat animationDuration = 0.15;
   if (self.contentView.superview != nil) {
     [UIView transitionFromView:self.contentView
                         toView:newContentView
-                      duration:0.25
+                      duration:animationDuration
                        options:UIViewAnimationOptionTransitionCrossDissolve
                     completion:^(BOOL finished) {
                       self.contentView = newContentView;
@@ -101,7 +165,21 @@ Synth(buttons)
   } else {
     self.contentView = newContentView;
     [self addSubview:newContentView];
+    
+    // Don't animate frame adjust if there was no content before
+    animationDuration = 0;
   }
+  
+  // Adjust frame size
+  [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionLayoutSubviews animations:^{
+    CGRect dialogFrame = CGRectInset(layoutFrame, -kCODialogFrameInset - kCODialogPadding, -kCODialogFrameInset - kCODialogPadding);
+    dialogFrame.origin.x = (CGRectGetWidth(self.hostView.bounds) - CGRectGetWidth(dialogFrame)) / 2.0;
+    dialogFrame.origin.y = (CGRectGetHeight(self.hostView.bounds) - CGRectGetHeight(dialogFrame)) / 2.0;
+    
+    self.frame = CGRectIntegral(dialogFrame);
+  } completion:^(BOOL finished) {
+    // finished
+  }];
 }
 
 - (void)removeAllButtons {
@@ -306,13 +384,11 @@ Synth(buttons)
   CGFloat fontSize = 18.0;
   CGRect textFrame = CGRectIntegral(CGRectMake(0, (CGRectGetHeight(rect) - fontSize) / 2.0 - 1.0, CGRectGetWidth(rect), fontSize));
   
-  UIFont *font = [UIFont boldSystemFontOfSize:18.0];
-  
   CGContextSaveGState(ctx);
   CGContextSetShadowWithColor(ctx, CGSizeMake(0.0, -1.0), 0.0, [UIColor blackColor].CGColor);
   
   [[UIColor whiteColor] set];
-  [title drawInRect:textFrame withFont:font lineBreakMode:UILineBreakModeMiddleTruncation alignment:UITextAlignmentCenter];
+  [title drawInRect:textFrame withFont:self.titleFont lineBreakMode:UILineBreakModeMiddleTruncation alignment:UITextAlignmentCenter];
   
   CGContextRestoreGState(ctx);
   
@@ -327,8 +403,7 @@ Synth(buttons)
     CGContextSaveGState(ctx);
     CGContextSetShadowWithColor(ctx, CGSizeMake(0.0, -1.0), 0.0, [UIColor blackColor].CGColor);
     
-    CGFloat fontSize = (isSubtitle ? 14.0 : 18.0);
-    UIFont *font = (isSubtitle ? [UIFont systemFontOfSize:fontSize] : [UIFont boldSystemFontOfSize:fontSize]);
+    UIFont *font = (isSubtitle ? self.subtitleFont : self.titleFont);
     
     [[UIColor whiteColor] set];
     
@@ -340,20 +415,8 @@ Synth(buttons)
 
 - (void)drawRect:(CGRect)rect {
   [self drawDialogBackgroundInRect:rect];
-  
-  // Draw title
-  CGRect titleRect = CGRectInset(rect, kCODialogFrameInset, kCODialogFrameInset);
-  titleRect.origin.y += kCODialogPadding * 2.0;
-  titleRect.size.height = 18.0;
-  
-  [self drawTitleInRect:titleRect subtitle:NO];
-  
-  // Draw subtitle
-  CGRect subtitleRect = CGRectInset(rect, kCODialogFrameInset, kCODialogFrameInset);
-  subtitleRect.origin.y = CGRectGetMaxY(titleRect) + kCODialogPadding;
-  subtitleRect.size.height = 14.0;
-  
-  [self drawTitleInRect:subtitleRect subtitle:YES];
+  [self drawTitleInRect:layout.titleRect subtitle:NO];
+  [self drawTitleInRect:layout.subtitleRect subtitle:YES];
 }
 
 @end
