@@ -79,6 +79,13 @@ Synth(highlightedIndex)
     [activityView startAnimating];
     
     return activityView;
+  } else if (self.dialogStyle == CODialogStyleDeterminate) {
+    UIProgressView *progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
+    progressView.progress = 0.5; // TODO: remove
+    
+    progressView.frame = CGRectMake(0, 0, 200.0, 88.0);
+    
+    return progressView;
   }
   return nil;
 }

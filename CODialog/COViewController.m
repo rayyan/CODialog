@@ -53,6 +53,19 @@
 
 - (void)showDeterminate:(id)sender {
   NSLog(@"determinate");
+  
+  self.dialog.title = @"Determinate";
+  self.dialog.subtitle = nil;
+  self.dialog.dialogStyle = CODialogStyleDeterminate;
+  
+  [self.dialog removeAllButtons];
+  [self.dialog addButtonWithTitle:@"Do Nothing" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showSuccess:) highlighted:YES];
+  [self.dialog showOrUpdateAnimated:YES];
+}
+
+- (void)showSuccess:(id)sender {
+  NSLog(@"success");
 }
 
 @end
