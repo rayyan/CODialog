@@ -449,7 +449,7 @@ Synth(highlightedIndex)
   CGContextRestoreGState(ctx);
 }
 
-- (void)drawTitleInRect:(CGRect)rect subtitle:(BOOL)isSubtitle {
+- (void)drawTitleInRect:(CGRect)rect isSubtitle:(BOOL)isSubtitle {
   NSString *title = (isSubtitle ? self.subtitle : self.title);
   if (title.length > 0) {
     CGContextRef ctx = UIGraphicsGetCurrentContext();
@@ -469,8 +469,8 @@ Synth(highlightedIndex)
 
 - (void)drawRect:(CGRect)rect {
   [self drawDialogBackgroundInRect:rect];
-  [self drawTitleInRect:layout.titleRect subtitle:NO];
-  [self drawTitleInRect:layout.subtitleRect subtitle:YES];
+  [self drawTitleInRect:layout.titleRect isSubtitle:NO];
+  [self drawTitleInRect:layout.subtitleRect isSubtitle:YES];
 }
 
 @end
