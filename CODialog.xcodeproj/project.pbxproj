@@ -1,0 +1,283 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DCE92A4B1536F33D006BD7ED /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE92A4A1536F33D006BD7ED /* UIKit.framework */; };
+		DCE92A4D1536F33D006BD7ED /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE92A4C1536F33D006BD7ED /* Foundation.framework */; };
+		DCE92A4F1536F33D006BD7ED /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCE92A4E1536F33D006BD7ED /* CoreGraphics.framework */; };
+		DCE92A551536F33D006BD7ED /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DCE92A531536F33D006BD7ED /* InfoPlist.strings */; };
+		DCE92A571536F33D006BD7ED /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE92A561536F33D006BD7ED /* main.m */; };
+		DCE92A5B1536F33D006BD7ED /* COAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE92A5A1536F33D006BD7ED /* COAppDelegate.m */; };
+		DCE92A5E1536F33D006BD7ED /* COViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE92A5D1536F33D006BD7ED /* COViewController.m */; };
+		DCE92A611536F33D006BD7ED /* COViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DCE92A5F1536F33D006BD7ED /* COViewController.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		DCE92A461536F33D006BD7ED /* CODialog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CODialog.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCE92A4A1536F33D006BD7ED /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		DCE92A4C1536F33D006BD7ED /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		DCE92A4E1536F33D006BD7ED /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		DCE92A521536F33D006BD7ED /* CODialog-Info.plist */ = {isa = PBXFileReference; path = "CODialog-Info.plist"; sourceTree = "<group>"; };
+		DCE92A541536F33D006BD7ED /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DCE92A561536F33D006BD7ED /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		DCE92A581536F33D006BD7ED /* CODialog-Prefix.pch */ = {isa = PBXFileReference; path = "CODialog-Prefix.pch"; sourceTree = "<group>"; };
+		DCE92A591536F33D006BD7ED /* COAppDelegate.h */ = {isa = PBXFileReference; path = COAppDelegate.h; sourceTree = "<group>"; };
+		DCE92A5A1536F33D006BD7ED /* COAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = COAppDelegate.m; sourceTree = "<group>"; };
+		DCE92A5C1536F33D006BD7ED /* COViewController.h */ = {isa = PBXFileReference; path = COViewController.h; sourceTree = "<group>"; };
+		DCE92A5D1536F33D006BD7ED /* COViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = COViewController.m; sourceTree = "<group>"; };
+		DCE92A601536F33D006BD7ED /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/COViewController.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DCE92A431536F33D006BD7ED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DCE92A4B1536F33D006BD7ED /* UIKit.framework in Frameworks */,
+				DCE92A4D1536F33D006BD7ED /* Foundation.framework in Frameworks */,
+				DCE92A4F1536F33D006BD7ED /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DCE92A3B1536F33D006BD7ED = {
+			isa = PBXGroup;
+			children = (
+				DCE92A501536F33D006BD7ED /* CODialog */,
+				DCE92A491536F33D006BD7ED /* Frameworks */,
+				DCE92A471536F33D006BD7ED /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DCE92A471536F33D006BD7ED /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DCE92A461536F33D006BD7ED /* CODialog.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DCE92A491536F33D006BD7ED /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DCE92A4A1536F33D006BD7ED /* UIKit.framework */,
+				DCE92A4C1536F33D006BD7ED /* Foundation.framework */,
+				DCE92A4E1536F33D006BD7ED /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DCE92A501536F33D006BD7ED /* CODialog */ = {
+			isa = PBXGroup;
+			children = (
+				DCE92A591536F33D006BD7ED /* COAppDelegate.h */,
+				DCE92A5A1536F33D006BD7ED /* COAppDelegate.m */,
+				DCE92A5C1536F33D006BD7ED /* COViewController.h */,
+				DCE92A5D1536F33D006BD7ED /* COViewController.m */,
+				DCE92A5F1536F33D006BD7ED /* COViewController.xib */,
+				DCE92A511536F33D006BD7ED /* Supporting Files */,
+			);
+			path = CODialog;
+			sourceTree = "<group>";
+		};
+		DCE92A511536F33D006BD7ED /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				DCE92A521536F33D006BD7ED /* CODialog-Info.plist */,
+				DCE92A531536F33D006BD7ED /* InfoPlist.strings */,
+				DCE92A561536F33D006BD7ED /* main.m */,
+				DCE92A581536F33D006BD7ED /* CODialog-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DCE92A451536F33D006BD7ED /* CODialog */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DCE92A641536F33D006BD7ED /* Build configuration list for PBXNativeTarget "CODialog" */;
+			buildPhases = (
+				DCE92A421536F33D006BD7ED /* Sources */,
+				DCE92A431536F33D006BD7ED /* Frameworks */,
+				DCE92A441536F33D006BD7ED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CODialog;
+			productName = CODialog;
+			productReference = DCE92A461536F33D006BD7ED /* CODialog.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DCE92A3D1536F33D006BD7ED /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = CO;
+				LastUpgradeCheck = 0430;
+				ORGANIZATIONNAME = chocomoko.com;
+			};
+			buildConfigurationList = DCE92A401536F33D006BD7ED /* Build configuration list for PBXProject "CODialog" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = DCE92A3B1536F33D006BD7ED;
+			productRefGroup = DCE92A471536F33D006BD7ED /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DCE92A451536F33D006BD7ED /* CODialog */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DCE92A441536F33D006BD7ED /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DCE92A551536F33D006BD7ED /* InfoPlist.strings in Resources */,
+				DCE92A611536F33D006BD7ED /* COViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DCE92A421536F33D006BD7ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DCE92A571536F33D006BD7ED /* main.m in Sources */,
+				DCE92A5B1536F33D006BD7ED /* COAppDelegate.m in Sources */,
+				DCE92A5E1536F33D006BD7ED /* COViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		DCE92A531536F33D006BD7ED /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DCE92A541536F33D006BD7ED /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		DCE92A5F1536F33D006BD7ED /* COViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DCE92A601536F33D006BD7ED /* en */,
+			);
+			name = COViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		DCE92A621536F33D006BD7ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		DCE92A631536F33D006BD7ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DCE92A651536F33D006BD7ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CODialog/CODialog-Prefix.pch";
+				INFOPLIST_FILE = "CODialog/CODialog-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		DCE92A661536F33D006BD7ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CODialog/CODialog-Prefix.pch";
+				INFOPLIST_FILE = "CODialog/CODialog-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DCE92A401536F33D006BD7ED /* Build configuration list for PBXProject "CODialog" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DCE92A621536F33D006BD7ED /* Debug */,
+				DCE92A631536F33D006BD7ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DCE92A641536F33D006BD7ED /* Build configuration list for PBXNativeTarget "CODialog" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DCE92A651536F33D006BD7ED /* Debug */,
+				DCE92A661536F33D006BD7ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DCE92A3D1536F33D006BD7ED /* Project object */;
+}
