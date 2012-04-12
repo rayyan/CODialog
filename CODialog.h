@@ -35,6 +35,7 @@ typedef NSInteger CODialogStyle;
 
 - (void)removeAllButtons;
 - (void)addButtonWithTitle:(NSString *)title target:(id)target selector:(SEL)sel;
+- (void)addButtonWithTitle:(NSString *)title target:(id)target selector:(SEL)sel highlighted:(BOOL)flag;
 
 /** @name Showing, Updating and Hiding */
 

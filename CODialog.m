@@ -15,6 +15,7 @@
 @property (nonatomic, strong) NSMutableArray *buttons;
 @property (nonatomic, strong) UIFont *titleFont;
 @property (nonatomic, strong) UIFont *subtitleFont;
+@property (nonatomic, assign) NSInteger highlightedIndex;
 @end
 
 #define Synth(x) @synthesize x = x##_;
@@ -43,6 +44,7 @@ Synth(contentView)
 Synth(buttons)
 Synth(titleFont)
 Synth(subtitleFont)
+Synth(highlightedIndex)
 
 + (instancetype)dialogWithView:(UIView *)hostView {
   return [[self alloc] initWithView:hostView];
@@ -51,6 +53,7 @@ Synth(subtitleFont)
 - (id)initWithView:(UIView *)hostView {
   self = [super initWithFrame:[self defaultDialogFrame]];
   if (self) {
+    self.highlightedIndex = -1;
     self.titleFont = [UIFont boldSystemFontOfSize:18.0];
     self.subtitleFont = [UIFont systemFontOfSize:14.0];
     self.hostView = hostView;
@@ -141,12 +144,13 @@ Synth(subtitleFont)
       UIButton *button = [self.buttons objectAtIndex:i];
       button.frame = buttonFrame;
       
+      BOOL highlighted = (self.highlightedIndex == i);
       NSString *title = [button titleForState:UIControlStateNormal];
       
       // Set default image
       UIGraphicsBeginImageContextWithOptions(buttonFrame.size, NO, 0);
       
-      [self drawButtonInRect:(CGRect){CGPointZero, buttonFrame.size} title:title highlighted:NO down:NO];
+      [self drawButtonInRect:(CGRect){CGPointZero, buttonFrame.size} title:title highlighted:highlighted down:NO];
       
       [button setImage:UIGraphicsGetImageFromCurrentImageContext() forState:UIControlStateNormal];
       
@@ -196,13 +200,22 @@ Synth(subtitleFont)
 
 - (void)removeAllButtons {
   [self.buttons removeAllObjects];
+  self.highlightedIndex = -1;
 }
 
 - (void)addButtonWithTitle:(NSString *)title target:(id)target selector:(SEL)sel {
+  [self addButtonWithTitle:title target:target selector:sel highlighted:NO];
+}
+
+- (void)addButtonWithTitle:(NSString *)title target:(id)target selector:(SEL)sel highlighted:(BOOL)flag {
   UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
   
   [button setTitle:title forState:UIControlStateNormal];
   [button addTarget:target action:sel forControlEvents:UIControlEventTouchUpInside];
+  
+  if (flag) {
+    self.highlightedIndex = self.buttons.count;
+  }
   
   [self.buttons addObject:button];
 }
