@@ -22,7 +22,17 @@
   // Display dialog
   CODialog *dialog = [CODialog dialogWithView:self.view];
   
+  [dialog addButtonWithTitle:@"Cancel" target:self selector:@selector(cancel:)];
+  [dialog addButtonWithTitle:@"Upload" target:self selector:@selector(upload:)];
   [dialog showOrUpdateAnimated:YES];
+}
+
+- (void)cancel:(id)sender {
+  NSLog(@"cancel");
+}
+
+- (void)upload:(id)sender {
+  NSLog(@"upload");
 }
 
 @end

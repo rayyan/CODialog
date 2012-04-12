@@ -11,17 +11,26 @@
 
 @interface CODialog ()
 @property (nonatomic, strong) UIView *hostView;
+@property (nonatomic, strong) UIView *contentView;
+@property (nonatomic, strong) NSMutableArray *buttons;
 @end
 
 #define Synth(x) @synthesize x = x##_;
+
+#define kCODialogPadding 8.0
+#define kCODialogFrameInset 8.0
+#define kCODialogButtonHeight 44.0
 
 @implementation CODialog
 Synth(customView)
 Synth(dialogStyle)
 Synth(title)
 Synth(subtitle)
+Synth(progress)
 Synth(batchDelay)
 Synth(hostView)
+Synth(contentView)
+Synth(buttons)
 
 + (instancetype)dialogWithView:(UIView *)hostView {
   return [[self alloc] initWithView:hostView];
@@ -33,12 +42,84 @@ Synth(hostView)
     self.hostView = hostView;
     self.opaque = NO;
     self.alpha = 1.0;
+    self.buttons = [NSMutableArray new];
   }
   return self;
 }
 
+- (void)layoutComponents {
+  // Create new content view
+  CGRect contentFrame = CGRectInset(self.bounds, kCODialogFrameInset, kCODialogFrameInset);
+  UIView *newContentView = [[UIView alloc] initWithFrame:contentFrame];
+  newContentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  
+  // Layout buttons on new content view
+  NSUInteger count = self.buttons.count;
+  if (count > 0) {
+    CGFloat height = CGRectGetHeight(contentFrame);
+    CGFloat buttonWidth = (CGRectGetWidth(contentFrame) - kCODialogPadding * ((CGFloat)count + 1.0)) / (CGFloat)count;
+    
+    for (int i=0; i<count; i++) {
+      CGFloat left = kCODialogPadding * ((CGFloat)i + 1.0) + buttonWidth * (CGFloat)i;
+      CGRect buttonFrame = CGRectIntegral(CGRectMake(left, height - kCODialogButtonHeight - kCODialogPadding, buttonWidth, kCODialogButtonHeight));
+      
+      UIButton *button = [self.buttons objectAtIndex:i];
+      button.frame = buttonFrame;
+      
+      NSString *title = [button titleForState:UIControlStateNormal];
+      
+      // Set default image
+      UIGraphicsBeginImageContextWithOptions(buttonFrame.size, NO, 0);
+      
+      [self drawButtonInRect:(CGRect){CGPointZero, buttonFrame.size} title:title highlighted:NO down:NO];
+      
+      [button setImage:UIGraphicsGetImageFromCurrentImageContext() forState:UIControlStateNormal];
+      
+      UIGraphicsEndImageContext();
+      
+      // Set alternate image
+      UIGraphicsBeginImageContextWithOptions(buttonFrame.size, NO, 0);
+      
+      [self drawButtonInRect:(CGRect){CGPointZero, buttonFrame.size} title:title highlighted:NO down:YES];
+      [button setImage:UIGraphicsGetImageFromCurrentImageContext() forState:UIControlStateHighlighted];
+      
+      UIGraphicsEndImageContext();
+      
+      [newContentView addSubview:button];
+    }
+  }
+  
+  // Fade content views
+  if (self.contentView.superview != nil) {
+    [UIView transitionFromView:self.contentView
+                        toView:newContentView
+                      duration:0.25
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+                    completion:^(BOOL finished) {
+                      self.contentView = newContentView;
+                    }];
+  } else {
+    self.contentView = newContentView;
+    [self addSubview:newContentView];
+  }
+}
+
+- (void)removeAllButtons {
+  [self.buttons removeAllObjects];
+}
+
+- (void)addButtonWithTitle:(NSString *)title target:(id)target selector:(SEL)sel {
+  UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+  
+  [button setTitle:title forState:UIControlStateNormal];
+  [button addTarget:target action:sel forControlEvents:UIControlEventTouchUpInside];
+  
+  [self.buttons addObject:button];
+}
+
 - (void)showOrUpdateAnimated:(BOOL)flag {
   [self.hostView addSubview:self];
+  [self layoutComponents];
 }
 
 - (void)hideAnimated:(BOOL)flag {
@@ -73,10 +154,9 @@ Synth(hostView)
   CGFloat strokeWidth = 2.0;
   CGColorRef dialogShadow = [UIColor blackColor].CGColor;
   CGSize shadowOffset = CGSizeMake(0, 4);
-  CGFloat shadowBlurRadius = 6;
+  CGFloat shadowBlurRadius = kCODialogFrameInset - 2.0;
   
-  CGFloat frameInset = shadowBlurRadius + 2;
-  CGRect frame = CGRectInset(CGRectIntegral(self.bounds), frameInset, frameInset);
+  CGRect frame = CGRectInset(CGRectIntegral(self.bounds), kCODialogFrameInset, kCODialogFrameInset);
   
   // Rounded Rectangle Drawing
   UIBezierPath *roundedRectanglePath = [UIBezierPath bezierPathWithRoundedRect:frame cornerRadius:cornerRadius];
@@ -131,7 +211,7 @@ Synth(hostView)
   CGContextRestoreGState(context);
 }
 
-- (void)drawButtonInRect:(CGRect)rect highlighted:(BOOL)highlighted down:(BOOL)down {
+- (void)drawButtonInRect:(CGRect)rect title:(NSString *)title highlighted:(BOOL)highlighted down:(BOOL)down {
   CGContextRef ctx = UIGraphicsGetCurrentContext();
   CGContextSaveGState(ctx);
   
@@ -198,11 +278,18 @@ Synth(hostView)
                               CGPointMake(CGRectGetMidX(buttonFrame), CGRectGetMaxY(buttonFrame)), 0);
   CGContextRestoreGState(ctx);
   
-  // Draw highlight
+  // Draw highlight or down state
   if (highlighted) {
     CGContextSaveGState(ctx);
     
     [[UIColor colorWithWhite:1.0 alpha:0.25] setFill];
+    [fillPath fill];
+    
+    CGContextRestoreGState(ctx);
+  } else if (down) {
+    CGContextSaveGState(ctx);
+    
+    [[UIColor colorWithWhite:0.0 alpha:0.25] setFill];
     [fillPath fill];
     
     CGContextRestoreGState(ctx);
@@ -215,19 +302,26 @@ Synth(hostView)
   [[UIColor colorWithWhite:0.0 alpha:0.8] setStroke];
   [strokePath stroke];
   
+  // Draw title
+  CGFloat fontSize = 18.0;
+  CGRect textFrame = CGRectIntegral(CGRectMake(0, (CGRectGetHeight(rect) - fontSize) / 2.0 - 1.0, CGRectGetWidth(rect), fontSize));
+  
+  UIFont *font = [UIFont boldSystemFontOfSize:18.0];
+  
+  CGContextSaveGState(ctx);
+  CGContextSetShadowWithColor(ctx, CGSizeMake(0.0, -1.0), 0.0, [UIColor blackColor].CGColor);
+  
+  [[UIColor whiteColor] set];
+  [title drawInRect:textFrame withFont:font lineBreakMode:UILineBreakModeMiddleTruncation alignment:UITextAlignmentCenter];
+  
+  CGContextRestoreGState(ctx);
+  
   // Restore
   CGContextRestoreGState(ctx);
 }
 
 - (void)drawRect:(CGRect)rect {
   [self drawDialogBackgroundInRect:rect];
-  
-  // TODO: remove
-  CGRect bframe = CGRectMake(20, CGRectGetHeight(rect) - 44.0 - 20.0, 100, 44.0);
-  [self drawButtonInRect:bframe highlighted:NO down:NO];
-  
-  CGRect bframe2 = CGRectOffset(bframe, CGRectGetWidth(bframe) + 20.0, 0);
-  [self drawButtonInRect:bframe2 highlighted:YES down:NO];
 }
 
 @end

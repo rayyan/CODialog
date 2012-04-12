@@ -24,11 +24,19 @@ typedef NSInteger CODialogStyle;
 @property (nonatomic, assign) CODialogStyle dialogStyle;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *subtitle;
+@property (nonatomic, assign) CGFloat progress;
 @property (nonatomic, assign) NSTimeInterval batchDelay;
 
 + (instancetype)dialogWithView:(UIView *)hostView;
 
 - (id)initWithView:(UIView *)hostView;
+
+/** @name Configuration */
+
+- (void)removeAllButtons;
+- (void)addButtonWithTitle:(NSString *)title target:(id)target selector:(SEL)sel;
+
+/** @name Showing, Updating and Hiding */
 
 - (void)showOrUpdateAnimated:(BOOL)flag;
 - (void)hideAnimated:(BOOL)flag;
@@ -37,6 +45,6 @@ typedef NSInteger CODialogStyle;
 /** @name Methods to Override */
 
 - (void)drawDialogBackgroundInRect:(CGRect)rect;
-- (void)drawButtonInRect:(CGRect)rect highlighted:(BOOL)highlighted down:(BOOL)down;
+- (void)drawButtonInRect:(CGRect)rect title:(NSString *)title highlighted:(BOOL)highlighted down:(BOOL)down;
 
 @end
