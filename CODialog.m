@@ -83,32 +83,43 @@ Synth(subtitleFont)
   
   // Title frame
   CGFloat titleHeight = 0;
+  CGFloat minY = CGRectGetMinY(layoutFrame);
   if (self.title.length > 0) {
-    titleHeight = [self.title sizeWithFont:self.titleFont forWidth:layoutWidth lineBreakMode:UILineBreakModeWordWrap].height;
+    titleHeight = [self.title sizeWithFont:self.titleFont
+                         constrainedToSize:CGSizeMake(layoutWidth, MAXFLOAT)
+                             lineBreakMode:UILineBreakModeWordWrap].height;
   }
   layout.titleRect = CGRectMake(CGRectGetMinX(layoutFrame), CGRectGetMinY(layoutFrame), CGRectGetWidth(layoutFrame), titleHeight);
   
   // Subtitle frame
   CGFloat subtitleHeight = 0;
+  minY = CGRectGetMaxY(layout.titleRect);
   if (self.subtitle.length > 0) {
-    subtitleHeight = [self.subtitle sizeWithFont:self.subtitleFont forWidth:layoutWidth lineBreakMode:UILineBreakModeWordWrap].height;
+    subtitleHeight = [self.subtitle sizeWithFont:self.subtitleFont
+                               constrainedToSize:CGSizeMake(layoutWidth, MAXFLOAT)
+                                   lineBreakMode:UILineBreakModeWordWrap].height;
+    minY += kCODialogPadding;
   }
-  layout.subtitleRect = CGRectMake(CGRectGetMinX(layout.titleRect), CGRectGetMaxY(layout.titleRect) + kCODialogPadding, layoutWidth, titleHeight);
+  layout.subtitleRect = CGRectMake(CGRectGetMinX(layout.titleRect), minY, layoutWidth, subtitleHeight);
   
   // Content frame
   CGFloat accessoryHeight = 0;
+  minY = CGRectGetMaxY(layout.subtitleRect);
   UIView *accessoryView = [self accessoryView];
   if (accessoryView != nil) {
     accessoryHeight = CGRectGetHeight(accessoryView.frame);
+    minY += kCODialogPadding;
   }
-  layout.accessoryRect = CGRectMake(CGRectGetMinX(layout.subtitleRect), CGRectGetMaxY(layout.subtitleRect) + kCODialogPadding, layoutWidth, accessoryHeight);
+  layout.accessoryRect = CGRectMake(CGRectGetMinX(layout.subtitleRect), minY, layoutWidth, accessoryHeight);
   
   // Buttons frame  
   CGFloat buttonsHeight = 0;
+  minY = CGRectGetMaxY(layout.accessoryRect);
   if (self.buttons.count > 0) {
     buttonsHeight = kCODialogButtonHeight;
+    minY += kCODialogPadding;
   }
-  layout.buttonRect = CGRectMake(CGRectGetMinX(layout.accessoryRect), CGRectGetMaxY(layout.accessoryRect) + kCODialogPadding, layoutWidth, buttonsHeight);
+  layout.buttonRect = CGRectMake(CGRectGetMinX(layout.accessoryRect), minY, layoutWidth, buttonsHeight);
   
   // Adjust layout frame
   layoutFrame.size.height = CGRectGetMaxY(layout.buttonRect);
