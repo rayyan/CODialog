@@ -15,6 +15,8 @@
 		DCE92A5B1536F33D006BD7ED /* COAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE92A5A1536F33D006BD7ED /* COAppDelegate.m */; };
 		DCE92A5E1536F33D006BD7ED /* COViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE92A5D1536F33D006BD7ED /* COViewController.m */; };
 		DCE92A611536F33D006BD7ED /* COViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DCE92A5F1536F33D006BD7ED /* COViewController.xib */; };
+		DCE92A681536F3C7006BD7ED /* wallpaper.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DCE92A671536F3C7006BD7ED /* wallpaper.jpg */; };
+		DCE92A6B1536F3D4006BD7ED /* CODialog.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE92A6A1536F3D4006BD7ED /* CODialog.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,15 +24,18 @@
 		DCE92A4A1536F33D006BD7ED /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DCE92A4C1536F33D006BD7ED /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		DCE92A4E1536F33D006BD7ED /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		DCE92A521536F33D006BD7ED /* CODialog-Info.plist */ = {isa = PBXFileReference; path = "CODialog-Info.plist"; sourceTree = "<group>"; };
+		DCE92A521536F33D006BD7ED /* CODialog-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CODialog-Info.plist"; sourceTree = "<group>"; };
 		DCE92A541536F33D006BD7ED /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DCE92A561536F33D006BD7ED /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		DCE92A581536F33D006BD7ED /* CODialog-Prefix.pch */ = {isa = PBXFileReference; path = "CODialog-Prefix.pch"; sourceTree = "<group>"; };
-		DCE92A591536F33D006BD7ED /* COAppDelegate.h */ = {isa = PBXFileReference; path = COAppDelegate.h; sourceTree = "<group>"; };
+		DCE92A581536F33D006BD7ED /* CODialog-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CODialog-Prefix.pch"; sourceTree = "<group>"; };
+		DCE92A591536F33D006BD7ED /* COAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COAppDelegate.h; sourceTree = "<group>"; };
 		DCE92A5A1536F33D006BD7ED /* COAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = COAppDelegate.m; sourceTree = "<group>"; };
-		DCE92A5C1536F33D006BD7ED /* COViewController.h */ = {isa = PBXFileReference; path = COViewController.h; sourceTree = "<group>"; };
+		DCE92A5C1536F33D006BD7ED /* COViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COViewController.h; sourceTree = "<group>"; };
 		DCE92A5D1536F33D006BD7ED /* COViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = COViewController.m; sourceTree = "<group>"; };
 		DCE92A601536F33D006BD7ED /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/COViewController.xib; sourceTree = "<group>"; };
+		DCE92A671536F3C7006BD7ED /* wallpaper.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wallpaper.jpg; sourceTree = "<group>"; };
+		DCE92A691536F3D4006BD7ED /* CODialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CODialog.h; sourceTree = "<group>"; };
+		DCE92A6A1536F3D4006BD7ED /* CODialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CODialog.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +55,8 @@
 		DCE92A3B1536F33D006BD7ED = {
 			isa = PBXGroup;
 			children = (
+				DCE92A691536F3D4006BD7ED /* CODialog.h */,
+				DCE92A6A1536F3D4006BD7ED /* CODialog.m */,
 				DCE92A501536F33D006BD7ED /* CODialog */,
 				DCE92A491536F33D006BD7ED /* Frameworks */,
 				DCE92A471536F33D006BD7ED /* Products */,
@@ -90,6 +97,7 @@
 		DCE92A511536F33D006BD7ED /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DCE92A671536F3C7006BD7ED /* wallpaper.jpg */,
 				DCE92A521536F33D006BD7ED /* CODialog-Info.plist */,
 				DCE92A531536F33D006BD7ED /* InfoPlist.strings */,
 				DCE92A561536F33D006BD7ED /* main.m */,
@@ -152,6 +160,7 @@
 			files = (
 				DCE92A551536F33D006BD7ED /* InfoPlist.strings in Resources */,
 				DCE92A611536F33D006BD7ED /* COViewController.xib in Resources */,
+				DCE92A681536F3C7006BD7ED /* wallpaper.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,6 +174,7 @@
 				DCE92A571536F33D006BD7ED /* main.m in Sources */,
 				DCE92A5B1536F33D006BD7ED /* COAppDelegate.m in Sources */,
 				DCE92A5E1536F33D006BD7ED /* COViewController.m in Sources */,
+				DCE92A6B1536F3D4006BD7ED /* CODialog.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

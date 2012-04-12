@@ -8,27 +8,21 @@
 
 #import "COViewController.h"
 
-@interface COViewController ()
+#import "CODialog.h"
 
-@end
 
 @implementation COViewController
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+- (void)viewDidAppear:(BOOL)animated {
+  UIImage *image = [UIImage imageNamed:@"wallpaper.jpg"];
+  UIColor *color = [UIColor colorWithPatternImage:image];
+  
+  self.view.backgroundColor = color;
+  
+  // Display dialog
+  CODialog *dialog = [CODialog dialogWithView:self.view];
+  
+  [dialog showOrUpdateAnimated:YES];
 }
 
 @end
