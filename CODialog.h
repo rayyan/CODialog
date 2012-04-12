@@ -10,6 +10,7 @@
 
 
 enum {
+  CODialogStyleDefault = 0,
   CODialogStyleIndeterminate,
   CODialogStyleDeterminate,
   CODialogStyleTextInput,

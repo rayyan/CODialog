@@ -74,14 +74,21 @@ Synth(highlightedIndex)
 
 - (UIView *)accessoryView {
   // TODO: return view depending on dialog style
+  if (self.dialogStyle == CODialogStyleIndeterminate) {
+    UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    [activityView startAnimating];
+    
+    return activityView;
+  }
   return nil;
 }
 
 - (void)layoutComponents {
+  [self setNeedsDisplay];
+  
   // Compute frames of components
-  CGRect layoutFrame = CGRectInset(self.bounds,
-                                   kCODialogFrameInset + kCODialogPadding,
-                                   kCODialogFrameInset + kCODialogPadding);
+  CGFloat layoutFrameInset = kCODialogFrameInset + kCODialogPadding;
+  CGRect layoutFrame = CGRectInset(self.bounds, layoutFrameInset, layoutFrameInset);
   CGFloat layoutWidth = CGRectGetWidth(layoutFrame);
   
   // Title frame
@@ -93,7 +100,7 @@ Synth(highlightedIndex)
                              lineBreakMode:UILineBreakModeWordWrap].height;
     minY += kCODialogPadding;
   }
-  layout.titleRect = CGRectMake(CGRectGetMinX(layoutFrame), minY, CGRectGetWidth(layoutFrame), titleHeight);
+  layout.titleRect = CGRectMake(CGRectGetMinX(layoutFrame), minY, layoutWidth, titleHeight);
   
   // Subtitle frame
   CGFloat subtitleHeight = 0;
@@ -104,26 +111,34 @@ Synth(highlightedIndex)
                                    lineBreakMode:UILineBreakModeWordWrap].height;
     minY += kCODialogPadding;
   }
-  layout.subtitleRect = CGRectMake(CGRectGetMinX(layout.titleRect), minY, layoutWidth, subtitleHeight);
+  layout.subtitleRect = CGRectMake(CGRectGetMinX(layoutFrame), minY, layoutWidth, subtitleHeight);
   
-  // Content frame
-  CGFloat accessoryHeight = 0;
-  minY = CGRectGetMaxY(layout.subtitleRect);
+  // Accessory frame (note that views are in the content view coordinate system)
   UIView *accessoryView = [self accessoryView];
+  accessoryView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+  
+  CGFloat accessoryHeight = 0;
+  CGFloat accessoryWidth = CGRectGetWidth(layoutFrame);
+  CGFloat accessoryLeft = 0;
+  
+  minY = CGRectGetMaxY(layout.subtitleRect) - layoutFrameInset;
+  
   if (accessoryView != nil) {
     accessoryHeight = CGRectGetHeight(accessoryView.frame);
+    accessoryWidth = CGRectGetWidth(accessoryView.frame);
+    accessoryLeft = (CGRectGetWidth(layoutFrame) - accessoryWidth) / 2.0;
     minY += kCODialogPadding;
   }
-  layout.accessoryRect = CGRectMake(CGRectGetMinX(layout.subtitleRect), minY, layoutWidth, accessoryHeight);
+  layout.accessoryRect = CGRectMake(accessoryLeft, minY, accessoryWidth, accessoryHeight);
   
-  // Buttons frame  
+  // Buttons frame (note that views are in the content view coordinate system)
   CGFloat buttonsHeight = 0;
   minY = CGRectGetMaxY(layout.accessoryRect);
   if (self.buttons.count > 0) {
     buttonsHeight = kCODialogButtonHeight;
     minY += kCODialogPadding;
   }
-  layout.buttonRect = CGRectMake(CGRectGetMinX(layout.accessoryRect), minY, layoutWidth, buttonsHeight);
+  layout.buttonRect = CGRectMake(CGRectGetMinX(layoutFrame), minY, layoutWidth, buttonsHeight);
   
   // Adjust layout frame
   layoutFrame.size.height = CGRectGetMaxY(layout.buttonRect);
@@ -132,6 +147,11 @@ Synth(highlightedIndex)
   UIView *newContentView = [[UIView alloc] initWithFrame:layoutFrame];
   newContentView.contentMode = UIViewContentModeRedraw;
   
+  // Layout accessory view
+  accessoryView.frame = layout.accessoryRect;
+  
+  [newContentView addSubview:accessoryView];
+  
   // Layout buttons on new content view
   NSUInteger count = self.buttons.count;
   if (count > 0) {
@@ -139,10 +159,11 @@ Synth(highlightedIndex)
     
     for (int i=0; i<count; i++) {
       CGFloat left = (kCODialogPadding + buttonWidth) * (CGFloat)i;
-      CGRect buttonFrame = CGRectIntegral(CGRectMake(left, CGRectGetMinY(layout.buttonRect), buttonWidth, kCODialogButtonHeight));
+      CGRect buttonFrame = CGRectIntegral(CGRectMake(left, CGRectGetMinY(layout.buttonRect), buttonWidth, CGRectGetHeight(layout.buttonRect)));
       
       UIButton *button = [self.buttons objectAtIndex:i];
       button.frame = buttonFrame;
+      button.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
       
       BOOL highlighted = (self.highlightedIndex == i);
       NSString *title = [button titleForState:UIControlStateNormal];
@@ -194,7 +215,7 @@ Synth(highlightedIndex)
     
     self.frame = CGRectIntegral(dialogFrame);
   } completion:^(BOOL finished) {
-    // finished
+    [self setNeedsDisplay];
   }];
 }
 
@@ -426,6 +447,7 @@ Synth(highlightedIndex)
   if (title.length > 0) {
     CGContextRef ctx = UIGraphicsGetCurrentContext();
     CGContextSaveGState(ctx);
+    
     CGContextSetShadowWithColor(ctx, CGSizeMake(0.0, -1.0), 0.0, [UIColor blackColor].CGColor);
     
     UIFont *font = (isSubtitle ? self.subtitleFont : self.titleFont);
