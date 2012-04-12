@@ -9,6 +9,10 @@
 #import "CODialog.h"
 
 
+@interface CODialogTextField : UITextField
+@property (nonatomic, strong) CODialog *dialog;
+@end
+
 @interface CODialog ()
 @property (nonatomic, strong) UIView *hostView;
 @property (nonatomic, strong) UIView *contentView;
@@ -232,14 +236,6 @@ Synth(highlightedIndex)
       field.frame = fieldFrame;
       field.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
       
-      // Set background image
-      UIGraphicsBeginImageContextWithOptions(fieldFrame.size, NO, 0);
-      
-      [self drawTextFieldInRect:(CGRect){CGPointZero, fieldFrame.size}];
-      [field setBackground:UIGraphicsGetImageFromCurrentImageContext()];
-      
-      UIGraphicsEndImageContext();
-      
       [newContentView addSubview:field];
     }
   }
@@ -316,7 +312,8 @@ Synth(highlightedIndex)
 }
 
 - (void)addTextFieldWithPlaceholder:(NSString *)placeholder secure:(BOOL)secure {
-  UITextField *field = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 200, kCODialogTextFieldHeight)];
+  CODialogTextField *field = [[CODialogTextField alloc] initWithFrame:CGRectMake(0, 0, 200, kCODialogTextFieldHeight)];
+  field.dialog = self;
   field.placeholder = placeholder;
   field.secureTextEntry = secure;
   field.font = [UIFont systemFontOfSize:kCODialogTextFieldHeight - 8.0];
@@ -719,6 +716,23 @@ Synth(highlightedIndex)
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
   [textField resignFirstResponder];
   return YES;
+}
+
+@end
+
+@implementation CODialogTextField
+Synth(dialog)
+
+- (CGRect)textRectForBounds:(CGRect)bounds {
+  return CGRectInset(bounds, 4.0, 4.0);
+}
+
+- (CGRect)editingRectForBounds:(CGRect)bounds {
+  return [self textRectForBounds:bounds];
+}
+
+- (void)drawRect:(CGRect)rect {
+  [self.dialog drawTextFieldInRect:rect];
 }
 
 @end
