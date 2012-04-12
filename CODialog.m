@@ -13,8 +13,13 @@
 @property (nonatomic, strong) CODialog *dialog;
 @end
 
+@interface CODialogWindowOverlay : UIWindow
+@property (nonatomic, strong) CODialog *dialog;
+@end
+
 @interface CODialog ()
 @property (nonatomic, strong) UIView *hostView;
+@property (nonatomic, strong) CODialogWindowOverlay *overlayWindow;
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, strong) NSMutableArray *textFields;
 @property (nonatomic, strong) NSMutableArray *buttons;
@@ -48,6 +53,7 @@ Synth(subtitle)
 Synth(progress)
 Synth(batchDelay)
 Synth(hostView)
+Synth(overlayWindow)
 Synth(contentView)
 Synth(textFields)
 Synth(buttons)
@@ -70,6 +76,8 @@ Synth(highlightedIndex)
     self.alpha = 1.0;
     self.buttons = [NSMutableArray new];
     self.textFields = [NSMutableArray new];
+    self.overlayWindow = [CODialogWindowOverlay new];
+    self.overlayWindow.dialog = self;
     
     // Register for keyboard notifications
     NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -84,11 +92,15 @@ Synth(highlightedIndex)
 }
 
 - (void)adjustToKeyboardBounds:(CGRect)bounds {
-  CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
-  CGFloat height = CGRectGetHeight(appFrame) - CGRectGetHeight(bounds);
+  CGRect screenBounds = [[UIScreen mainScreen] bounds];
+  CGFloat height = CGRectGetHeight(screenBounds) - CGRectGetHeight(bounds);
   
   CGRect frame = self.frame;
   frame.origin.y = (height - CGRectGetHeight(self.bounds)) / 2.0;
+  
+  if (CGRectGetMinY(frame) < 0) {
+    NSLog(@"warning: dialog is clipped, origin negative (%f)", CGRectGetMinY(frame));
+  }
   
   [UIView animateWithDuration:kCODialogAnimationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
     self.frame = frame;
@@ -355,7 +367,13 @@ Synth(highlightedIndex)
 }
 
 - (void)showOrUpdateAnimated:(BOOL)flag {
-  [self.hostView addSubview:self];
+  self.overlayWindow.frame = self.hostView.window.bounds;
+  self.overlayWindow.opaque = NO;
+  self.overlayWindow.windowLevel = UIWindowLevelStatusBar + 1;
+  
+  [self.overlayWindow addSubview:self];
+  [self.overlayWindow makeKeyAndVisible];
+  
   [self layoutComponents];
 }
 
@@ -712,6 +730,40 @@ Synth(highlightedIndex)
   CGContextRestoreGState(context);
 }
 
+- (void)drawDimmedBackgroundInRect:(CGRect)rect {
+  // General Declarations
+  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  
+  // Color Declarations
+  UIColor *greyInner = [UIColor colorWithWhite:0.0 alpha:0.70];
+  UIColor *greyOuter = [UIColor colorWithWhite:0.0 alpha:0.0];
+  
+  // Gradient Declarations
+  NSArray* gradientColors = [NSArray arrayWithObjects: 
+                             (id)greyOuter.CGColor, 
+                             (id)greyInner.CGColor, nil];
+  CGFloat gradientLocations[] = {0, 1};
+  CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)gradientColors, gradientLocations);
+  
+  // Rectangle Drawing
+  CGPoint mid = CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
+  
+  UIBezierPath* rectanglePath = [UIBezierPath bezierPathWithRect:rect];
+  CGContextSaveGState(context);
+  [rectanglePath addClip];
+  CGContextDrawRadialGradient(context,
+                              gradient,
+                              mid, 10,
+                              mid, CGRectGetMidY(rect),
+                              kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
+  CGContextRestoreGState(context);
+  
+  // Cleanup
+  CGGradientRelease(gradient);
+  CGColorSpaceRelease(colorSpace);
+}
+
 - (void)drawRect:(CGRect)rect {
   [self drawDialogBackgroundInRect:rect];
   [self drawTitleInRect:layout.titleRect isSubtitle:NO];
@@ -750,6 +802,15 @@ Synth(dialog)
 
 - (void)drawRect:(CGRect)rect {
   [self.dialog drawTextFieldInRect:rect];
+}
+
+@end
+
+@implementation CODialogWindowOverlay
+Synth(dialog)
+
+- (void)drawRect:(CGRect)rect {
+  [self.dialog drawDimmedBackgroundInRect:rect];
 }
 
 @end
