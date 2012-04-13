@@ -336,8 +336,28 @@ Synth(highlightedIndex)
   }];
 }
 
+- (void)resetLayout {
+  self.title = nil;
+  self.subtitle = nil;
+  self.dialogStyle = CODialogStyleDefault;
+  self.progress = 0;
+  self.customView = nil;
+  
+  [self removeAllControls];
+}
+
+- (void)removeAllControls {
+  [self removeAllTextFields];
+  [self removeAllButtons];
+}
+
 - (void)removeAllTextFields {
   [self.textFields removeAllObjects];
+}
+
+- (void)removeAllButtons {
+  [self.buttons removeAllObjects];
+  self.highlightedIndex = -1;
 }
 
 - (void)addTextFieldWithPlaceholder:(NSString *)placeholder secure:(BOOL)secure {
@@ -357,11 +377,6 @@ Synth(highlightedIndex)
   field.delegate = (id)self;
   
   [self.textFields addObject:field];
-}
-
-- (void)removeAllButtons {
-  [self.buttons removeAllObjects];
-  self.highlightedIndex = -1;
 }
 
 - (void)addButtonWithTitle:(NSString *)title target:(id)target selector:(SEL)sel {
