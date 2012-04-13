@@ -413,14 +413,12 @@ Synth(highlightedIndex)
   
   // Create overlay
   if (show) {
-    overlay = [CODialogWindowOverlay new];
+    self.overlay = overlay = [CODialogWindowOverlay new];
     overlay.opaque = NO;
     overlay.windowLevel = UIWindowLevelStatusBar + 1;    
     overlay.dialog = self;
     overlay.frame = self.hostWindow.bounds;
     overlay.alpha = 0.0;
-    
-    self.overlay = overlay;
   }
   
   // Layout components
