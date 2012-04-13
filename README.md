@@ -1,0 +1,1 @@
+CODialog is a completely configurable, almost pixel perfect replacement for UIAlertView.
