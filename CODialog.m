@@ -29,8 +29,8 @@
 @property (nonatomic, assign) NSInteger highlightedIndex;
 @end
 
-#define Synth(x) @synthesize x = x##_;
-#define AssertMQ() NSAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"%@ must be called on main queue", NSStringFromSelector(_cmd));
+#define CODialogSynth(x) @synthesize x = x##_;
+#define CODialogAssertMQ() NSAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"%@ must be called on main queue", NSStringFromSelector(_cmd));
 
 #define kCODialogAnimationDuration 0.15
 #define kCODialogPopScale 0.5
@@ -49,20 +49,20 @@
     CGRect buttonRect;
   } layout;
 }
-Synth(customView)
-Synth(dialogStyle)
-Synth(title)
-Synth(subtitle)
-Synth(batchDelay)
-Synth(overlay)
-Synth(hostWindow)
-Synth(contentView)
-Synth(accessoryView)
-Synth(textFields)
-Synth(buttons)
-Synth(titleFont)
-Synth(subtitleFont)
-Synth(highlightedIndex)
+CODialogSynth(customView)
+CODialogSynth(dialogStyle)
+CODialogSynth(title)
+CODialogSynth(subtitle)
+CODialogSynth(batchDelay)
+CODialogSynth(overlay)
+CODialogSynth(hostWindow)
+CODialogSynth(contentView)
+CODialogSynth(accessoryView)
+CODialogSynth(textFields)
+CODialogSynth(buttons)
+CODialogSynth(titleFont)
+CODialogSynth(subtitleFont)
+CODialogSynth(highlightedIndex)
 
 + (NSMutableArray *)dialogStack {
   static NSMutableArray *stack = nil;
@@ -406,7 +406,7 @@ Synth(highlightedIndex)
 }
 
 - (void)showOrUpdateAnimated:(BOOL)flag {
-  AssertMQ();
+  CODialogAssertMQ();
   
   CODialogWindowOverlay *overlay = self.overlay;
   BOOL show = (overlay == nil);
@@ -443,7 +443,7 @@ Synth(highlightedIndex)
 }
 
 - (void)hideAnimated:(BOOL)flag {
-  AssertMQ();
+  CODialogAssertMQ();
   
   CODialogWindowOverlay *overlay = self.overlay;
   
@@ -466,7 +466,7 @@ Synth(highlightedIndex)
 }
 
 - (void)hideAnimated:(BOOL)flag afterDelay:(NSTimeInterval)delay {
-  AssertMQ();
+  CODialogAssertMQ();
   
   SEL selector = @selector(hideAnimated:);
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
@@ -878,7 +878,7 @@ Synth(highlightedIndex)
 @end
 
 @implementation CODialogTextField
-Synth(dialog)
+CODialogSynth(dialog)
 
 - (CGRect)textRectForBounds:(CGRect)bounds {
   return CGRectInset(bounds, 4.0, 4.0);
@@ -895,7 +895,7 @@ Synth(dialog)
 @end
 
 @implementation CODialogWindowOverlay
-Synth(dialog)
+CODialogSynth(dialog)
 
 - (void)drawRect:(CGRect)rect {
   [self.dialog drawDimmedBackgroundInRect:rect];
