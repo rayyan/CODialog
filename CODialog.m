@@ -64,15 +64,6 @@ CODialogSynth(titleFont)
 CODialogSynth(subtitleFont)
 CODialogSynth(highlightedIndex)
 
-+ (NSMutableArray *)dialogStack {
-  static NSMutableArray *stack = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    stack = [NSMutableArray new];
-  });
-  return stack;
-}
-
 + (instancetype)dialogWithWindow:(UIWindow *)hostWindow {
   return [[self alloc] initWithWindow:hostWindow];
 }
