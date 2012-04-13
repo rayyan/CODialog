@@ -464,7 +464,6 @@ CODialogSynth(highlightedIndex)
     overlay.hidden = YES;
     self.transform = CGAffineTransformIdentity;
     [self removeFromSuperview];
-    [self.hostWindow makeKeyAndVisible];
     self.overlay = nil;
   }];
 }
