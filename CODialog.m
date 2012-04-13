@@ -32,6 +32,7 @@
 #define AssertMQ() NSAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"%@ must be called on main queue", NSStringFromSelector(_cmd));
 
 #define kCODialogAnimationDuration 0.15
+#define kCODialogPopScale 0.5
 #define kCODialogPadding 8.0
 #define kCODialogFrameInset 8.0
 #define kCODialogButtonHeight 44.0
@@ -438,7 +439,7 @@ static CODialogWindowOverlay *kCODialogSharedWindowOverlay = nil;
   [self layoutComponents];
   
   // Scale down ourselves for pop animation
-  self.transform = CGAffineTransformMakeScale(0.5, 0.5);
+  self.transform = CGAffineTransformMakeScale(kCODialogPopScale, kCODialogPopScale);
   
   // Animate
   NSTimeInterval animationDuration = (flag ? kCODialogAnimationDuration : 0.0);
@@ -466,7 +467,7 @@ static CODialogWindowOverlay *kCODialogSharedWindowOverlay = nil;
   NSTimeInterval animationDuration = (flag ? kCODialogAnimationDuration : 0.0);
   [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
     overlay.alpha = 0.0;
-    self.transform = CGAffineTransformMakeScale(0.5, 0.5);
+    self.transform = CGAffineTransformMakeScale(kCODialogPopScale, kCODialogPopScale);
   } completion:^(BOOL finished) {
     overlay.hidden = YES;
     self.transform = CGAffineTransformIdentity;
