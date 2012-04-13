@@ -71,6 +71,7 @@ CODialogSynth(highlightedIndex)
 - (id)initWithWindow:(UIWindow *)hostWindow {
   self = [super initWithFrame:[self defaultDialogFrame]];
   if (self) {
+    self.batchDelay = 0;
     self.highlightedIndex = -1;
     self.titleFont = [UIFont boldSystemFontOfSize:18.0];
     self.subtitleFont = [UIFont systemFontOfSize:14.0];
@@ -401,7 +402,7 @@ CODialogSynth(highlightedIndex)
   return [field text];
 }
 
-- (void)showOrUpdateAnimated:(BOOL)flag {
+- (void)showOrUpdateAnimatedInternal:(BOOL)flag {
   CODialogAssertMQ();
   
   CODialogWindowOverlay *overlay = self.overlay;
@@ -438,6 +439,13 @@ CODialogSynth(highlightedIndex)
   }
 }
 
+- (void)showOrUpdateAnimated:(BOOL)flag {
+  CODialogAssertMQ();
+  SEL selector = @selector(showOrUpdateAnimatedInternal:);
+  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
+  [self performSelector:selector withObject:[NSNumber numberWithBool:flag] afterDelay:self.batchDelay];
+}
+
 - (void)hideAnimated:(BOOL)flag {
   CODialogAssertMQ();
   
@@ -449,7 +457,7 @@ CODialogSynth(highlightedIndex)
   }
   
   NSTimeInterval animationDuration = (flag ? kCODialogAnimationDuration : 0.0);
-  [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+  [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionLayoutSubviews animations:^{
     overlay.alpha = 0.0;
     self.transform = CGAffineTransformMakeScale(kCODialogPopScale, kCODialogPopScale);
   } completion:^(BOOL finished) {
