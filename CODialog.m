@@ -18,6 +18,7 @@
 @end
 
 @interface CODialog ()
+@property (nonatomic, strong) CODialogWindowOverlay *overlay;
 @property (nonatomic, strong) UIWindow *hostWindow;
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, strong) UIView *accessoryView;
@@ -53,6 +54,7 @@ Synth(dialogStyle)
 Synth(title)
 Synth(subtitle)
 Synth(batchDelay)
+Synth(overlay)
 Synth(hostWindow)
 Synth(contentView)
 Synth(accessoryView)
@@ -62,22 +64,13 @@ Synth(titleFont)
 Synth(subtitleFont)
 Synth(highlightedIndex)
 
-static CODialogWindowOverlay *kCODialogSharedWindowOverlay = nil;
-
-+ (void)setSharedWindowOverlay:(CODialogWindowOverlay *)overlay {
-  kCODialogSharedWindowOverlay = overlay;
-}
-
-+ (CODialogWindowOverlay *)sharedWindowOverlay {
-  return kCODialogSharedWindowOverlay;
-}
-
-+ (CODialogWindowOverlay *)makeWindowOverlay {
-  CODialogWindowOverlay *overlay = [CODialogWindowOverlay new];
-  overlay.opaque = NO;
-  overlay.windowLevel = UIWindowLevelStatusBar + 1;    
-  
-  return overlay;
++ (NSMutableArray *)dialogStack {
+  static NSMutableArray *stack = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    stack = [NSMutableArray new];
+  });
+  return stack;
 }
 
 + (instancetype)dialogWithWindow:(UIWindow *)hostWindow {
@@ -415,49 +408,46 @@ static CODialogWindowOverlay *kCODialogSharedWindowOverlay = nil;
 - (void)showOrUpdateAnimated:(BOOL)flag {
   AssertMQ();
   
-  CODialogWindowOverlay *overlay = [isa sharedWindowOverlay];
+  CODialogWindowOverlay *overlay = self.overlay;
+  BOOL show = (overlay == nil);
   
-  // We currently don't allow more than one alert pop up at the same time
-  // TODO: Make entire class stackable instead.
-  if (overlay != nil) {
-    [NSException raise:NSInternalInconsistencyException format:@"Cannot show new alert, some other alert is still active"];
-    return;
+  // Create overlay
+  if (show) {
+    overlay = [CODialogWindowOverlay new];
+    overlay.opaque = NO;
+    overlay.windowLevel = UIWindowLevelStatusBar + 1;    
+    overlay.dialog = self;
+    overlay.frame = self.hostWindow.bounds;
+    overlay.alpha = 0.0;
+    
+    self.overlay = overlay;
   }
-  
-  // Create new overlay
-  overlay = [isa makeWindowOverlay];
-  [isa setSharedWindowOverlay:overlay];
-  
-  NSAssert(overlay != nil, @"overlay cannot be nil");
-  
-  // Setup overlay
-  overlay.dialog = self;
-  overlay.frame = self.hostWindow.bounds;
-  overlay.alpha = 0.0;
   
   // Layout components
   [self layoutComponents];
   
-  // Scale down ourselves for pop animation
-  self.transform = CGAffineTransformMakeScale(kCODialogPopScale, kCODialogPopScale);
-  
-  // Animate
-  NSTimeInterval animationDuration = (flag ? kCODialogAnimationDuration : 0.0);
-  [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionLayoutSubviews animations:^{
-    overlay.alpha = 1.0;
-    self.transform = CGAffineTransformIdentity;
-  } completion:^(BOOL finished) {
+  if (show) {
+    // Scale down ourselves for pop animation
+    self.transform = CGAffineTransformMakeScale(kCODialogPopScale, kCODialogPopScale);
     
-  }];
-  
-  [overlay addSubview:self];
-  [overlay makeKeyAndVisible];
+    // Animate
+    NSTimeInterval animationDuration = (flag ? kCODialogAnimationDuration : 0.0);
+    [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionLayoutSubviews animations:^{
+      overlay.alpha = 1.0;
+      self.transform = CGAffineTransformIdentity;
+    } completion:^(BOOL finished) {
+      // stub
+    }];
+    
+    [overlay addSubview:self];
+    [overlay makeKeyAndVisible];
+  }
 }
 
 - (void)hideAnimated:(BOOL)flag {
   AssertMQ();
   
-  CODialogWindowOverlay *overlay = [isa sharedWindowOverlay];
+  CODialogWindowOverlay *overlay = self.overlay;
   
   // Nothing to hide if it is not key window
   if (overlay == nil) {
@@ -473,7 +463,7 @@ static CODialogWindowOverlay *kCODialogSharedWindowOverlay = nil;
     self.transform = CGAffineTransformIdentity;
     [self removeFromSuperview];
     [self.hostWindow makeKeyAndVisible];
-    [isa setSharedWindowOverlay:nil];
+    self.overlay = nil;
   }];
 }
 
