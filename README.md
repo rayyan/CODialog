@@ -3,7 +3,7 @@
 CODialog is a completely configurable, almost pixel perfect replacement for UIAlertView.
 
 - Completely styleable and configurable
-- No images, everything is drawin in code
+- No images, everything is drawn in code
 - Matches UIAlertView's style very closely
 
 Follow me on Twitter: [@eaignr](https://twitter.com/#!/eaignr)
