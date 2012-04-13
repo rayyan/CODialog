@@ -18,8 +18,7 @@
 @end
 
 @interface CODialog ()
-@property (nonatomic, strong) UIView *hostView;
-@property (nonatomic, strong) CODialogWindowOverlay *overlayWindow;
+@property (nonatomic, strong) UIWindow *hostWindow;
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, strong) UIView *accessoryView;
 @property (nonatomic, strong) NSMutableArray *textFields;
@@ -30,6 +29,7 @@
 @end
 
 #define Synth(x) @synthesize x = x##_;
+#define AssertMQ() NSAssert(dispatch_get_current_queue() == dispatch_get_main_queue(), @"%@ must be called on main queue", NSStringFromSelector(_cmd));
 
 #define kCODialogAnimationDuration 0.15
 #define kCODialogPadding 8.0
@@ -52,8 +52,7 @@ Synth(dialogStyle)
 Synth(title)
 Synth(subtitle)
 Synth(batchDelay)
-Synth(hostView)
-Synth(overlayWindow)
+Synth(hostWindow)
 Synth(contentView)
 Synth(accessoryView)
 Synth(textFields)
@@ -62,23 +61,39 @@ Synth(titleFont)
 Synth(subtitleFont)
 Synth(highlightedIndex)
 
-+ (instancetype)dialogWithView:(UIView *)hostView {
-  return [[self alloc] initWithView:hostView];
+static CODialogWindowOverlay *kCODialogSharedWindowOverlay = nil;
+
++ (void)setSharedWindowOverlay:(CODialogWindowOverlay *)overlay {
+  kCODialogSharedWindowOverlay = overlay;
 }
 
-- (id)initWithView:(UIView *)hostView {
++ (CODialogWindowOverlay *)sharedWindowOverlay {
+  return kCODialogSharedWindowOverlay;
+}
+
++ (CODialogWindowOverlay *)makeWindowOverlay {
+  CODialogWindowOverlay *overlay = [CODialogWindowOverlay new];
+  overlay.opaque = NO;
+  overlay.windowLevel = UIWindowLevelStatusBar + 1;    
+  
+  return overlay;
+}
+
++ (instancetype)dialogWithWindow:(UIWindow *)hostWindow {
+  return [[self alloc] initWithWindow:hostWindow];
+}
+
+- (id)initWithWindow:(UIWindow *)hostWindow {
   self = [super initWithFrame:[self defaultDialogFrame]];
   if (self) {
     self.highlightedIndex = -1;
     self.titleFont = [UIFont boldSystemFontOfSize:18.0];
     self.subtitleFont = [UIFont systemFontOfSize:14.0];
-    self.hostView = hostView;
+    self.hostWindow = hostWindow;
     self.opaque = NO;
     self.alpha = 1.0;
     self.buttons = [NSMutableArray new];
     self.textFields = [NSMutableArray new];
-    self.overlayWindow = [CODialogWindowOverlay new];
-    self.overlayWindow.dialog = self;
     
     // Register for keyboard notifications
     NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -327,8 +342,8 @@ Synth(highlightedIndex)
   // Adjust frame size
   [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionLayoutSubviews animations:^{
     CGRect dialogFrame = CGRectInset(layoutFrame, -kCODialogFrameInset - kCODialogPadding, -kCODialogFrameInset - kCODialogPadding);
-    dialogFrame.origin.x = (CGRectGetWidth(self.hostView.bounds) - CGRectGetWidth(dialogFrame)) / 2.0;
-    dialogFrame.origin.y = (CGRectGetHeight(self.hostView.bounds) - CGRectGetHeight(dialogFrame)) / 2.0;
+    dialogFrame.origin.x = (CGRectGetWidth(self.hostWindow.bounds) - CGRectGetWidth(dialogFrame)) / 2.0;
+    dialogFrame.origin.y = (CGRectGetHeight(self.hostWindow.bounds) - CGRectGetHeight(dialogFrame)) / 2.0;
     
     self.frame = CGRectIntegral(dialogFrame);
   } completion:^(BOOL finished) {
@@ -397,22 +412,76 @@ Synth(highlightedIndex)
 }
 
 - (void)showOrUpdateAnimated:(BOOL)flag {
-  self.overlayWindow.frame = self.hostView.window.bounds;
-  self.overlayWindow.opaque = NO;
-  self.overlayWindow.windowLevel = UIWindowLevelStatusBar + 1;
+  AssertMQ();
   
-  [self.overlayWindow addSubview:self];
-  [self.overlayWindow makeKeyAndVisible];
+  CODialogWindowOverlay *overlay = [isa sharedWindowOverlay];
   
+  // We currently don't allow more than one alert pop up at the same time
+  // TODO: Make entire class stackable instead.
+  if (overlay != nil) {
+    [NSException raise:NSInternalInconsistencyException format:@"Cannot show new alert, some other alert is still active"];
+    return;
+  }
+  
+  // Create new overlay
+  overlay = [isa makeWindowOverlay];
+  [isa setSharedWindowOverlay:overlay];
+  
+  NSAssert(overlay != nil, @"overlay cannot be nil");
+  
+  // Setup overlay
+  overlay.dialog = self;
+  overlay.frame = self.hostWindow.bounds;
+  overlay.alpha = 0.0;
+  
+  // Layout components
   [self layoutComponents];
+  
+  // Scale down ourselves for pop animation
+  self.transform = CGAffineTransformMakeScale(0.5, 0.5);
+  
+  // Animate
+  NSTimeInterval animationDuration = (flag ? kCODialogAnimationDuration : 0.0);
+  [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionLayoutSubviews animations:^{
+    overlay.alpha = 1.0;
+    self.transform = CGAffineTransformIdentity;
+  } completion:^(BOOL finished) {
+    
+  }];
+  
+  [overlay addSubview:self];
+  [overlay makeKeyAndVisible];
 }
 
 - (void)hideAnimated:(BOOL)flag {
+  AssertMQ();
   
+  CODialogWindowOverlay *overlay = [isa sharedWindowOverlay];
+  
+  // Nothing to hide if it is not key window
+  if (overlay == nil) {
+    return;
+  }
+  
+  NSTimeInterval animationDuration = (flag ? kCODialogAnimationDuration : 0.0);
+  [UIView animateWithDuration:animationDuration delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+    overlay.alpha = 0.0;
+    self.transform = CGAffineTransformMakeScale(0.5, 0.5);
+  } completion:^(BOOL finished) {
+    overlay.hidden = YES;
+    self.transform = CGAffineTransformIdentity;
+    [self removeFromSuperview];
+    [self.hostWindow makeKeyAndVisible];
+    [isa setSharedWindowOverlay:nil];
+  }];
 }
 
 - (void)hideAnimated:(BOOL)flag afterDelay:(NSTimeInterval)delay {
+  AssertMQ();
   
+  SEL selector = @selector(hideAnimated:);
+  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
+  [self performSelector:selector withObject:[NSNumber numberWithBool:flag] afterDelay:delay];
 }
 
 - (void)drawDialogBackgroundInRect:(CGRect)rect {

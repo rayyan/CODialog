@@ -25,7 +25,7 @@
   self.view.backgroundColor = color;
   
   // Display dialog
-  self.dialog = [CODialog dialogWithView:self.view];
+  self.dialog = [CODialog dialogWithWindow:self.view.window];
   
   [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(advanceProgress:) userInfo:nil repeats:YES];
   
@@ -40,8 +40,24 @@
   self.dialog.progress = progress;
 }
 
-- (void)doNothing:(id)sender {
-  NSLog(@"i'm very good at doing nothing");
+- (void)hideAndShow:(id)sender {
+  [self.dialog hideAnimated:NO];
+  
+  double delayInSeconds = 2.0;
+  dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+  dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+    [self.dialog showOrUpdateAnimated:NO];
+  });
+}
+
+- (void)hideAnimatedAndShow:(id)sender {
+  [self.dialog hideAnimated:YES];
+  
+  double delayInSeconds = 2.0;
+  dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+  dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+    [self.dialog showOrUpdateAnimated:YES];
+  });
 }
 
 - (void)showDefault:(id)sender {
@@ -53,7 +69,8 @@
   self.dialog.title = @"Title";
   self.dialog.subtitle = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at tincidunt arcu. Donec faucibus velit ac ante condimentum pulvinar. Aliquam eget urna vel tortor laoreet porttitor. Pellentesque molestie fringilla tortor, ut consectetur diam adipiscing sit amet.";
   
-  [self.dialog addButtonWithTitle:@"Do Nothing" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Hide" target:self selector:@selector(hideAndShow:)];
+  [self.dialog addButtonWithTitle:@"Hide (A)" target:self selector:@selector(hideAnimatedAndShow:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showText:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }
@@ -71,7 +88,7 @@
   [self.dialog addTextFieldWithPlaceholder:@"Password" secure:YES];
   [self.dialog addTextFieldWithPlaceholder:@"Pin" secure:YES];
   
-  [self.dialog addButtonWithTitle:@"Fields" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Hide" target:self selector:@selector(hideAndShow:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showIndeterminate:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }
@@ -84,7 +101,7 @@
   self.dialog.title = @"Indeterminate";
   self.dialog.dialogStyle = CODialogStyleIndeterminate;
   
-  [self.dialog addButtonWithTitle:@"Indeterm." target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Hide" target:self selector:@selector(hideAndShow:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showDeterminate:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }
@@ -97,7 +114,7 @@
   self.dialog.title = @"Determinate";
   self.dialog.dialogStyle = CODialogStyleDeterminate;
   
-  [self.dialog addButtonWithTitle:@"Determ." target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Hide" target:self selector:@selector(hideAndShow:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showCustomView:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }
@@ -115,7 +132,7 @@
   self.dialog.dialogStyle = CODialogStyleCustomView;
   self.dialog.customView = view;
   
-  [self.dialog addButtonWithTitle:@"Custom" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Hide" target:self selector:@selector(hideAndShow:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showSuccess:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }
@@ -128,7 +145,7 @@
   self.dialog.dialogStyle = CODialogStyleSuccess;
   
   [self.dialog removeAllButtons];
-  [self.dialog addButtonWithTitle:@"Success" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Success" target:self selector:@selector(hideAndShow:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showError:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }
@@ -141,7 +158,7 @@
   self.dialog.title = @"Error";
   self.dialog.dialogStyle = CODialogStyleError;
   
-  [self.dialog addButtonWithTitle:@"Error" target:self selector:@selector(doNothing:)];
+  [self.dialog addButtonWithTitle:@"Hide" target:self selector:@selector(hideAndShow:)];
   [self.dialog addButtonWithTitle:@"Next" target:self selector:@selector(showDefault:) highlighted:YES];
   [self.dialog showOrUpdateAnimated:YES];
 }

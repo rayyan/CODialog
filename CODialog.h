@@ -27,9 +27,9 @@ typedef NSInteger CODialogStyle;
 @property (nonatomic, assign) CGFloat progress;
 @property (nonatomic, assign) NSTimeInterval batchDelay;
 
-+ (instancetype)dialogWithView:(UIView *)hostView;
++ (instancetype)dialogWithWindow:(UIWindow *)hostWindow;
 
-- (id)initWithView:(UIView *)hostView;
+- (id)initWithWindow:(UIWindow *)hostWindow;
 
 /** @name Configuration */
 
