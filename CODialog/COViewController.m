@@ -96,6 +96,13 @@
 - (void)showIndeterminate:(id)sender {
   NSLog(@"indeterminate");
   
+  // Display text values first
+  NSLog(@"user: %@, pass: %@, pin %@",
+        [self.dialog textForTextFieldAtIndex:0],
+        [self.dialog textForTextFieldAtIndex:1],
+        [self.dialog textForTextFieldAtIndex:2]);
+  
+  // Setup indeterminate dialog
   [self.dialog resetLayout];
   
   self.dialog.title = @"Indeterminate";

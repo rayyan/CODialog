@@ -42,6 +42,10 @@ typedef NSInteger CODialogStyle;
 - (void)addButtonWithTitle:(NSString *)title target:(id)target selector:(SEL)sel;
 - (void)addButtonWithTitle:(NSString *)title target:(id)target selector:(SEL)sel highlighted:(BOOL)flag;
 
+/** @name Getting Values */
+
+- (NSString *)textForTextFieldAtIndex:(NSUInteger)index;
+
 /** @name Showing, Updating and Hiding */
 
 - (void)showOrUpdateAnimated:(BOOL)flag;
