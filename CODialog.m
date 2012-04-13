@@ -828,7 +828,7 @@ CODialogSynth(highlightedIndex)
   
   // Color Declarations
   UIColor *greyInner = [UIColor colorWithWhite:0.0 alpha:0.70];
-  UIColor *greyOuter = [UIColor colorWithWhite:0.0 alpha:0.0];
+  UIColor *greyOuter = [UIColor colorWithWhite:0.0 alpha:0.2];
   
   // Gradient Declarations
   NSArray* gradientColors = [NSArray arrayWithObjects: 
